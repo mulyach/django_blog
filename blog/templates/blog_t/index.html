@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if latest_article_list %}
+    <h3>Select Article</h3>
+        <ul>
+            {% for article in latest_article_list %}
+                <a href="{% url 'blog:show_article' article.id %}">{{ article.title  }}</a>
+                <br>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No articles are available</p>
+    {% endif %}
+{% endblock %}

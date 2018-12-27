@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h4>{{ article.category }}</h4>
+    <h1>{{ article.title }}</h1>
+    {%if article.contributor_author %}<p>By: {{ article.contributor_author }}</p>{% endif %}
+    <br>
+    <fieldset>
+        <legend>{{ article.pub_date }}</legend>
+        {{ article.writeup }}    
+    </fieldset>
+    {% if images %}
+        {% for image in images %}
+            <img src="{{ MEDIA_URL }}{{ image.img_file }}" width="800" style="height:auto;"><br>
+            <strong>{{ image.caption }}</strong>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <br>
+    <h2>Comments</h2>
+    <table>
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>{{ add_comment_form.as_table }}</table>
+        <input type="submit" value="Post comment">
+    </form>
+    </table>
+    <br>
+    <br>
+    {% if comments %}
+        {% for comment in comments %}
+            <fieldset>
+                <legend>{{ comment.name }}</legend>
+                {{ comment.writeup }}
+                <br>
+                {{ comment.post_time}}
+            </fieldset>
+            <br>
+        {% endfor %}
+    {% else %}
+        <p>No comments posted. Be the first to comment!</p>
+    {% endif %}
+{% endblock %}

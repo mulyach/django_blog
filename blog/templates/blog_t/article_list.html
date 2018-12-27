@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>{{ header }}</h1>
+    {% if articles %}
+        <ul>
+            {% for article in articles %}
+                <a href="{% url 'blog:show_article' article.id %}">{{ article.title  }}</a>{% if article.contributor_author %} ({{ article.contributor_author }}){% endif %} - {{ article.pub_date }}
+                <br>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No articles in this category</p>
+    {% endif %}
+{% endblock %}
