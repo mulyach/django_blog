@@ -24,7 +24,7 @@ class Article(models.Model):
 
 class ItemCounter(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    datestr = models.CharField(max_length=20)
+    datestr = models.CharField(max_length=100)
     counts = models.IntegerField(default=0)
 
     def __str__(self):
