@@ -138,7 +138,7 @@ EMAIL_HOST_USER = 'batusarijkt@gmail.com'
 EMAIL_HOST_PASSWORD = 'jlperintis'
 EMAIL_PORT = 587
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 
 # Heroku: Update database configuration from $DATABASE_URL.
