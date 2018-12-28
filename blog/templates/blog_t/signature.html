@@ -45,7 +45,7 @@
             findxy('move', e)
         }, false);
         canvas.addEventListener("mousedown", function (e) {
-            myFunc(e)
+            findxy('down', e)
         }, false);
         canvas.addEventListener("mouseup", function (e) {
             findxy('up', e)
@@ -68,8 +68,8 @@
     
     function myFunc(e) {
         var m = confirm(e);
-        var m = confirm(e.clientX);
-        var m = confirm(e.clientY);        
+        var m = confirm(e.touches[0].clientX);
+        var m = confirm(e.touches[0].clientY);
     }
 
     function color(obj) {
