@@ -55,23 +55,19 @@
         }, false);
 
         canvas.addEventListener("touchmove", function (e) {
-            findxy('move', e)
+            findxy('move', e.touches[0])
         }, false);
-        canvas.addEventListener("touchstart", function(e) {myFunc(e)});
+        canvas.addEventListener("touchstart", function(e) {
+            findxy('down', e.touches[0])
+        }, false);
         canvas.addEventListener("touchend", function (e) {
-            findxy('up', e)
+            findxy('up', e.touches[0])
         }, false);
         canvas.addEventListener("touchcancel", function (e) {
-            findxy('out', e)
+            findxy('out', e.touches[0])
         }, false);
     }
     
-    function myFunc(e) {
-        var m = confirm(e);
-        var m = confirm(e.touches[0].clientX);
-        var m = confirm(e.touches[0].clientY);
-    }
-
     function color(obj) {
         switch (obj.id) {
             case "green":
