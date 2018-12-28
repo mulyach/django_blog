@@ -9,6 +9,12 @@
         <legend>{{ article.pub_date }}</legend>
         {{ article.writeup }}    
     </fieldset>
+    {% if images %}
+        {% for image in images %}
+            <img src="{{ MEDIA_URL }}{{ image.img_file }}" width="800" style="height:auto;"><br>
+            <strong>{{ image.caption }}</strong>
+        {% endfor %}
+    {% endif %}
     <br>
     <br>
     <h2>Comments</h2>
