@@ -41,12 +41,23 @@
         w = canvas.width;
         h = canvas.height;
     
+        canvas.addEventListener("mousemove", function (e) {
+            findxy('move', e)
+        }, false);
+        canvas.addEventListener("mousedown", function (e) {
+            findxy('down', e)
+        }, false);
+        canvas.addEventListener("mouseup", function (e) {
+            findxy('up', e)
+        }, false);
+        canvas.addEventListener("mouseout", function (e) {
+            findxy('out', e)
+        }, false);
+
         canvas.addEventListener("touchmove", function (e) {
             findxy('move', e)
         }, false);
-        canvas.addEventListener("touchstart", function (e) {
-            findxy('down', e)
-        }, false);
+        canvas.addEventListener("touchstart", myFunc);
         canvas.addEventListener("touchend", function (e) {
             findxy('up', e)
         }, false);
@@ -55,6 +66,10 @@
         }, false);
     }
     
+    function myFunc() {
+        var m = confirm("Click OK to clear");
+    }
+
     function color(obj) {
         switch (obj.id) {
             case "green":
