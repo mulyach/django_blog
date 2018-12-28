@@ -135,7 +135,7 @@ LOGIN_URL = '/account/login'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'batusarijkt@gmail.com'
-EMAIL_HOST_PASSWORD = 'jlperintis'
+EMAIL_HOST_PASSWORD = os.environ.get('BTSR','')
 EMAIL_PORT = 587
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
