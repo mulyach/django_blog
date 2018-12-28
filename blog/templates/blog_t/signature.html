@@ -57,7 +57,7 @@
         canvas.addEventListener("touchmove", function (e) {
             findxy('move', e)
         }, false);
-        canvas.addEventListener("touchstart", myFunc);
+        canvas.addEventListener("touchstart", function(e) {myFunc(e)});
         canvas.addEventListener("touchend", function (e) {
             findxy('up', e)
         }, false);
@@ -66,8 +66,8 @@
         }, false);
     }
     
-    function myFunc() {
-        var m = confirm("Click OK to clear");
+    function myFunc(e) {
+        var m = confirm(e);
     }
 
     function color(obj) {
