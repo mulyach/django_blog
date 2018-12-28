@@ -29,8 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','9brbkpm%$(pyu$uebof04!h=960bfls
 #DEBUG = True
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['lkestories.herokuapp.com','127.0.0.1']
 
 # Application definition
 
