@@ -11,6 +11,8 @@ urlpatterns = [
     path('my_articles/<username>', views.my_articles_list, name='my_articles'),
     path('signature/', views.signature, name='signature'),
     path('board/', views.board, name='board'),
+    path('chat/', views.chat_lobby, name='chat_lobby'),
+    path('chat/<room_name>/', views.chat_room, name='chat_room'),
     #path('test_stream',views.test_stream,name='stream'),
     #path('add comment/<int:article_id>/', views.add_comment, name='add comment')
 ]

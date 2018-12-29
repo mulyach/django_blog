@@ -147,6 +147,14 @@ def signature(request):
 
 def board(request):
     room_name = 'board'
-    return render(request, 'blog_t/room_text.html', {
+    return render(request, 'blog_t/board.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
+
+def chat_lobby(request):
+    return render(request, 'blog_t/chat_lobby.html', {})
+
+def chat_room(request, room_name):
+    return render(request, 'blog_t/chat_room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
     })
