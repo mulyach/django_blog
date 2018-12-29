@@ -166,4 +166,4 @@ CHANNEL_LAYERS = {
 
 IS_CI = os.environ.get('IS_CI', False)
 if not IS_CI:
-django_heroku.settings(locals())
+    django_heroku.settings(locals())
