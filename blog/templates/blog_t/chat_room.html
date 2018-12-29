@@ -1,11 +1,23 @@
 <!-- chat/templates/chat/room.html -->
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+</head>
+<body>
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+    <input id="chat-message-input" type="text" size="100"/><br/>
+    <input id="chat-message-submit" type="button" value="Send"/>
+    <br/>
+    <textarea id="redis" cols="100" rows="1">{{ redis }}</textarea><br/>
+</body>
 <script>
     var roomName = {{ room_name_json }};
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 
     var chatSocket = new WebSocket(
-        'ws://' + window.location.host +
+        ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
     chatSocket.onmessage = function(e) {
@@ -35,15 +47,4 @@
         messageInputDom.value = '';
     };
 </script>
-<head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
-</head>
-<body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
-    <input id="chat-message-input" type="text" size="100"/><br/>
-    <input id="chat-message-submit" type="button" value="Send"/>
-    <br/>
-    <textarea id="redis" cols="100" rows="1">{{ redis }}</textarea><br/>
-</body>
 </html>
