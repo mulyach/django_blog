@@ -8,3 +8,4 @@ channels==2.1.6
 channels-redis==2.3.2
 asgiref==2.3.2
 jsonschema==2.6.0
+daphne==2.2.4
