@@ -26,14 +26,14 @@ import os
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY','9brbkpm%$(pyu$uebof04!h=960bflss%5)&%2bx&)nxy5qp_-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
-ALLOWED_HOSTS = ['lkestories.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['lkestories.herokuapp.com','127.0.0.1','localhost']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -149,3 +149,14 @@ DATABASES['default'].update(db_from_env)
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Channels
+ASGI_APPLICATION = 'webproj.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1',6379)],
+        },
+    },
+}

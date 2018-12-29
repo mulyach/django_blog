@@ -11,6 +11,8 @@ from io import BytesIO
 from PIL import Image
 import base64
 from django.core.files.base import ContentFile
+from django.utils.safestring import mark_safe
+import json
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -142,3 +144,9 @@ def signature(request):
         return render(request,'blog_t/signature.html')            
     else:
         return render(request,'blog_t/signature.html')
+
+def board(request):
+    room_name = 'board'
+    return render(request, 'blog_t/room_text.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
