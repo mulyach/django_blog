@@ -156,7 +156,6 @@ def chat_lobby(request):
     return render(request, 'blog_t/chat_lobby.html', {})
 
 def chat_room(request, room_name):
-    redis = os.environ.get('REDIS_URL', '127.0.0.1')
     return render(request, 'blog_t/chat_room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name)),'redis':redis
+        'room_name_json': mark_safe(json.dumps(room_name))
     })
