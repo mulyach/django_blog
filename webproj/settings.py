@@ -156,7 +156,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('REDIS_URL',6379)],    #os.environ.get('REDIS_URL','127.0.0.1:6379')    #'127.0.0.1'
+            "hosts": [('lkestories.herokuapp.com',6379)],    #os.environ.get('REDIS_URL','127.0.0.1:6379')    #'127.0.0.1'
         },
         #'ROUTING': 'webproj.routing.channel_routing',
     },
