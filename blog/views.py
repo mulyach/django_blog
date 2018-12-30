@@ -29,8 +29,8 @@ def index(request):
 @staff_member_required()
 def start_comm(request):
     current_domain = get_current_site(request).domain
-    startchat(current_domain.split(':')[0])
-    return render(request,'messages.html',{'messages':['Server started']})
+    #startchat(current_domain.split(':')[0])
+    return render(request,'messages.html',{'messages':[current_domain]})  #'Server started'
 
 def show_article(request,article_id):
     current_article = Article.objects.get(id=article_id)
