@@ -181,7 +181,7 @@ def startWSchat():
 
 def connectWSchat(room_name):
     global utama_ws,current_domain
-    utama_ws = websocket.create_connection('ws://'+current_domain+'/ws/chat/'+room_name+'/')
+    utama_ws = websocket.create_connection('ws://'+current_domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
 
 def sendWSchat(message):
     global utama_ws,sent_list
@@ -199,13 +199,20 @@ def send_OTP(request,message):
     message = '~01'+message
     print(message)
     sendWSchat(message)
-    return render(request,'messages.html',{'messages':['Sending OTP to '+message]})
+    return render(request,'messages.html',{'messages':['Sending OTP to '+message[3:]]})
 
 def enter_OTP(request,message):
-    global utama_ws
+    global utama_ws,sent_list
     message = '~02'+message
     sendWSchat(message)
-    passed = json.loads(utama_ws.recv())['message']
+    lanjut = True
+    while lanjut:
+        passed = json.loads(utama_ws.recv())['message']
+        if passed in sent_list:
+            sent_list.remove(passed)
+        else:
+            lanjut = False
+    print('Passed adalah:',passed)
     return render(request,'messages.html',{'messages':['OTP verified' if passed == 'Y' else 'OTP did not match']})
 
 def startchat(domain):
