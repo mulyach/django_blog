@@ -29,7 +29,7 @@ def index(request):
 @staff_member_required()
 def start_comm(request):
     current_domain = os.environ.get('REDIS_URL', 'redis://localhost:6379')  #get_current_site(request).domain
-    startchat(current_domain)     #current_domain.split(':')[0]
+    startchat(current_domain.split('redis://')[1])
     return render(request,'messages.html',{'messages':[current_domain+'Server started']})
 
 def show_article(request,article_id):
