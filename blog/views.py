@@ -191,7 +191,7 @@ def sendWSchat(message):
             utama_ws.send(json.dumps({'message':message}))
             sent_list.append(message)
             lanjut = False
-        except ConnectionResetError:
+        except (ConnectionResetError,BrokenPipeError):
             print('RECONNECTING')
             connectWSchat(os.environ.get('MPATH', '__utama__'))
 
