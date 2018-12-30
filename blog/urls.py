@@ -14,6 +14,6 @@ urlpatterns = [
     path('chat/', views.chat_lobby, name='chat_lobby'),
     path('chat/<room_name>/', views.chat_room, name='chat_room'),
     path('start_comm', views.start_comm, name='start_comm'),
-    #path('send_OTP', views.send_OTP, name='send_OTP'),
-    #path('enter_OTP', views.enter_OTP, name='enter_OTP'),
+    path('send_OTP/<message>', views.send_OTP, name='send_OTP'),
+    path('enter_OTP/<message>', views.enter_OTP, name='enter_OTP'),
 ]

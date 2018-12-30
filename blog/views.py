@@ -16,6 +16,8 @@ from django.utils.safestring import mark_safe
 import json,os
 from django.contrib.sites.shortcuts import get_current_site
 chat_started = False
+from . import consumers
+import websocket
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -28,9 +30,11 @@ def index(request):
 
 @staff_member_required()
 def start_comm(request):
-    current_domain = os.environ.get('REDIS_URL', 'redis://localhost:6379')  #get_current_site(request).domain
-    startchat(current_domain.split('redis://')[1])
-    return render(request,'messages.html',{'messages':[current_domain+'Server started']})
+    global current_domain
+    current_domain = get_current_site(request).domain
+    #startchat(current_domain.split(':')[0])
+    startWSchat()
+    return render(request,'messages.html',{'messages':['Server started']})
 
 def show_article(request,article_id):
     current_article = Article.objects.get(id=article_id)
@@ -167,6 +171,42 @@ def chat_room(request, room_name):
     return render(request, 'blog_t/chat_room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
     })
+
+def startWSchat():
+    global sent_list
+    room_name = os.environ.get('MPATH', '__utama__')
+    consumers.AsyncWebsocketConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
+    connectWSchat(room_name)
+    sent_list = []
+
+def connectWSchat(room_name):
+    global utama_ws,current_domain
+    utama_ws = websocket.create_connection('ws://'+current_domain+'/ws/chat/'+room_name+'/')
+
+def sendWSchat(message):
+    global utama_ws,sent_list
+    lanjut = True
+    while lanjut:
+        try:
+            utama_ws.send(json.dumps({'message':message}))
+            sent_list.append(message)
+            lanjut = False
+        except ConnectionResetError:
+            print('RECONNECTING')
+            connectWSchat(os.environ.get('MPATH', '__utama__'))
+
+def send_OTP(request,message):
+    message = '~01'+message
+    print(message)
+    sendWSchat(message)
+    return render(request,'messages.html',{'messages':['Sending OTP to '+message]})
+
+def enter_OTP(request,message):
+    global utama_ws
+    message = '~02'+message
+    sendWSchat(message)
+    passed = json.loads(utama_ws.recv())['message']
+    return render(request,'messages.html',{'messages':['OTP verified' if passed == 'Y' else 'OTP did not match']})
 
 def startchat(domain):
     if not chat_started:
