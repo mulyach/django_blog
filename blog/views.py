@@ -13,7 +13,7 @@ from PIL import Image
 import base64
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
-import json
+import json,os
 from django.contrib.sites.shortcuts import get_current_site
 chat_started = False
 
@@ -28,9 +28,9 @@ def index(request):
 
 @staff_member_required()
 def start_comm(request):
-    current_domain = get_current_site(request).domain
+    current_domain = os.environ.get('REDIS_URL', 'redis://localhost:6379')  #get_current_site(request).domain
     startchat(current_domain)     #current_domain.split(':')[0]
-    return render(request,'messages.html',{'messages':[current_domain]})  #'Server started'
+    return render(request,'messages.html',{'messages':[current_domain+'Server started']})
 
 def show_article(request,article_id):
     current_article = Article.objects.get(id=article_id)
