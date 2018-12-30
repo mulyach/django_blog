@@ -201,9 +201,9 @@ def send_OTP(request,message):
     sendWSchat(message)
     return render(request,'messages.html',{'messages':['Sending OTP to '+message[3:]]})
 
-def enter_OTP(request,message):
+def enter_OTP(request,mobileno,message):
     global utama_ws,sent_list
-    message = '~02'+message
+    message = '~02'+mobileno+'|'+message
     sendWSchat(message)
     lanjut = True
     while lanjut:
@@ -213,7 +213,7 @@ def enter_OTP(request,message):
         else:
             lanjut = False
     print('Passed adalah:',passed)
-    return render(request,'messages.html',{'messages':['OTP verified' if passed == 'Y' else 'OTP did not match']})
+    return render(request,'messages.html',{'messages':['OTP verified' if passed == 'Y' else 'OTP or mobile number did not match']})
 
 def startchat(domain):
     if not chat_started:
