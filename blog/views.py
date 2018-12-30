@@ -2,6 +2,7 @@ from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponseRedirect, Http404 #, StreamingHttpResponse, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from .models import Category,Article,ItemCounter,WebCounter,Image,Signature
 from .forms import Add_Comment,Compose_Form,Image_Form
@@ -13,7 +14,8 @@ import base64
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 import json
-import os       #to be removed
+from django.contrib.sites.shortcuts import get_current_site
+chat_started = False
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -23,6 +25,12 @@ def index(request):
     latest_article_list = Article.objects.filter(display=True,contributor_author=None).order_by('-pub_date')[:20]
     context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all()}
     return render(request,'blog_t/index.html',context)
+
+@staff_member_required()
+def start_comm(request):
+    current_domain = get_current_site(request).domain
+    startchat(current_domain.split(':')[0])
+    return render(request,'messages.html',{'messages':['Server started']})
 
 def show_article(request,article_id):
     current_article = Article.objects.get(id=article_id)
@@ -159,3 +167,67 @@ def chat_room(request, room_name):
     return render(request, 'blog_t/chat_room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
     })
+
+def startchat(domain):
+    if not chat_started:
+        import socket,sys,threading,select
+        joincode = 'o'
+        commands = ['Send OTP','Passing entered OTP']
+
+        class Clientthread(threading.Thread):
+            def __init__(self,addr,conn):
+                threading.Thread.__init__(self)
+                self.addr = addr
+                self.conn = conn
+            def run(self):
+                interact(self.addr,self.conn)
+         
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        IP_address = domain #'127.0.0.1'
+        Port = 8081
+        server.bind((IP_address, Port))
+        print('Server is up. Awaiting desktop to join')
+        server.listen(100) 
+
+        def interact(addr,conn):
+            lanjut = True
+            while lanjut:
+                sockets_list = [sys.stdin, conn]
+                read_sockets,write_socket, error_socket = select.select(sockets_list,[],[])
+                for socks in read_sockets:
+                    if socks == conn:
+                        try:
+                            message = conn.recv(2048).decode('utf-8')
+                            if message:
+                                 print("<" + addr[0] + "> " + message)
+                        except:
+                            continue
+                    else:
+                        command = sys.stdin.readline()
+                        if command[0] in map(str,range(1,len(commands)+1)):
+                            conn.send(commands[int(command[0])-1].encode('utf-8'))
+                            if command[0]=='2':
+                                resp = input('OTP entered by customer: ')
+                                conn.send(resp.encode('utf-8'))
+                        elif command[0]==str(len(commands)+1):
+                            conn.close()
+                            server.close()
+                            print('Chat terminated')
+                            chat_started = False
+                            lanjut = False
+         
+        conn, addr = server.accept()
+        jcode = conn.recv(2048).decode('utf-8')
+        if jcode=='oG':
+            print(addr[0] + " connected")
+            con_msg = 'You are connected as a client to: '+domain+' server.'
+            conn.send(con_msg.encode('utf-8'))
+            thread = Clientthread(addr,conn)
+            thread.start()
+            print('COMMAND')
+            pcommands=commands+['Quit']
+            for idx in range(len(pcommands)):
+                print('{:d}. {:s}'.format(idx+1,pcommands[idx]))
+        else:
+            conn.send(b"Failed to connect")
