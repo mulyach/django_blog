@@ -202,21 +202,24 @@ def sendWSchat(request,message):
             startWSchat(request)
 
 def send_OTP(request,message):
+    max_attempt = 2
     message = '~01'+message
-    lanjut,result = True,''
+    lanjut,result,attempt = True,'',1
     print(message)
     sendWSchat(request,message)
-    while lanjut:
-        try:
-            result = json.loads(utama_ws.recv())['message']
-        except websocket._exceptions.WebSocketConnectionClosedException:
-            print('RESTARTING CHAT ROOM')
-            startWSchat(request)            
-        if result in sent_list:
-            sent_list.remove(result)
-        else:
-            print('RESULT',result)
-            lanjut = False
+    while result != 'S' and attempt<=2:
+        while lanjut:
+            try:
+                result = json.loads(utama_ws.recv())['message']
+            except websocket._exceptions.WebSocketConnectionClosedException:
+                print('RESTARTING CHAT ROOM')
+                startWSchat(request)            
+            if result in sent_list:
+                sent_list.remove(result)
+            else:
+                print('RESULT',result)
+                lanjut = False
+        attempt+=1
     return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
 
 def enter_OTP(request,mobileno,message):
