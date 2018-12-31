@@ -32,7 +32,6 @@ def index(request):
 def start_comm(request):
     global current_domain
     current_domain = get_current_site(request).domain
-    #startchat(current_domain.split(':')[0])
     startWSchat()
     return render(request,'messages.html',{'messages':['Server started']})
 
@@ -212,69 +211,4 @@ def enter_OTP(request,mobileno,message):
             sent_list.remove(passed)
         else:
             lanjut = False
-    print('Passed adalah:',passed)
     return render(request,'messages.html',{'messages':['OTP verified' if passed == 'Y' else 'OTP or mobile number did not match']})
-
-def startchat(domain):
-    if not chat_started:
-        import socket,sys,threading,select
-        joincode = 'o'
-        commands = ['Send OTP','Passing entered OTP']
-
-        class Clientthread(threading.Thread):
-            def __init__(self,addr,conn):
-                threading.Thread.__init__(self)
-                self.addr = addr
-                self.conn = conn
-            def run(self):
-                interact(self.addr,self.conn)
-         
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        IP_address = domain #'127.0.0.1'
-        Port = 8081
-        server.bind((IP_address, Port))
-        print('Server is up. Awaiting desktop to join')
-        server.listen(100) 
-
-        def interact(addr,conn):
-            lanjut = True
-            while lanjut:
-                sockets_list = [sys.stdin, conn]
-                read_sockets,write_socket, error_socket = select.select(sockets_list,[],[])
-                for socks in read_sockets:
-                    if socks == conn:
-                        try:
-                            message = conn.recv(2048).decode('utf-8')
-                            if message:
-                                 print("<" + addr[0] + "> " + message)
-                        except:
-                            continue
-                    else:
-                        command = sys.stdin.readline()
-                        if command[0] in map(str,range(1,len(commands)+1)):
-                            conn.send(commands[int(command[0])-1].encode('utf-8'))
-                            if command[0]=='2':
-                                resp = input('OTP entered by customer: ')
-                                conn.send(resp.encode('utf-8'))
-                        elif command[0]==str(len(commands)+1):
-                            conn.close()
-                            server.close()
-                            print('Chat terminated')
-                            chat_started = False
-                            lanjut = False
-         
-        conn, addr = server.accept()
-        jcode = conn.recv(2048).decode('utf-8')
-        if jcode=='oG':
-            print(addr[0] + " connected")
-            con_msg = 'You are connected as a client to: '+domain+' server.'
-            conn.send(con_msg.encode('utf-8'))
-            thread = Clientthread(addr,conn)
-            thread.start()
-            print('COMMAND')
-            pcommands=commands+['Quit']
-            for idx in range(len(pcommands)):
-                print('{:d}. {:s}'.format(idx+1,pcommands[idx]))
-        else:
-            conn.send(b"Failed to connect")
