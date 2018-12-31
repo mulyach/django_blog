@@ -196,9 +196,18 @@ def sendWSchat(message):
 
 def send_OTP(request,message):
     message = '~01'+message
-    print(message)
-    sendWSchat(message)
-    return render(request,'messages.html',{'messages':['Sending OTP to '+message[3:]]})
+    lanjut,result = True,''
+    while result != 'S':
+        print(message)
+        sendWSchat(message)
+        while lanjut:
+            result = json.loads(utama_ws.recv())['message']
+            if result in sent_list:
+                sent_list.remove(result)
+            else:
+                result = result
+                lanjut = False
+    return render(request,'messages.html',{'messages':['OTP sent to '+message[3:]]})
 
 def enter_OTP(request,mobileno,message):
     global utama_ws,sent_list
