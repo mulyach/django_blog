@@ -18,6 +18,7 @@ from django.contrib.sites.shortcuts import get_current_site
 chat_started = False
 from .consumers import ChatConsumer
 import websocket,time
+max_attempt = 2
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -202,7 +203,6 @@ def sendWSchat(request,message):
             startWSchat(request)
 
 def send_OTP(request,message):
-    max_attempt = 2
     message = '~01'+message
     lanjut,result,attempt = True,'',1
     print(message)
@@ -226,11 +226,24 @@ def enter_OTP(request,mobileno,message):
     global utama_ws,sent_list
     message = '~02'+mobileno+'$'+message
     sendWSchat(request,message)
-    lanjut = True
-    while lanjut:
-        passed = json.loads(utama_ws.recv())['message']
-        if passed in sent_list:
-            sent_list.remove(passed)
-        else:
-            lanjut = False
-    return render(request,'messages.html',{'messages':['OTP verified' if passed == 'Y' else 'OTP or mobile number did not match']})
+    lanjut,result,attempt = True,'',1
+    while result!='S' and attempt<=max_attempt:
+        while lanjut:
+            try:
+                result = json.loads(utama_ws.recv())['message']
+            except websocket._exceptions.WebSocketConnectionClosedException:
+                print('RESTARTING CHAT ROOM')
+                startWSchat(request)
+            if result in sent_list:
+                sent_list.remove(result)
+            else:
+                lanjut = False
+        print('RESULT:{}. Attempt:{}'.format(result,attempt))
+        attempt+=1
+    if result=='Y':
+        status = 'OTP verified'
+    elif result=='N':
+        status = 'OTP or mobile number did not match'
+    else:
+        status = 'OTP verification unsuccessful. Please retry.'
+    return render(request,'messages.html',{'messages':[status]})
