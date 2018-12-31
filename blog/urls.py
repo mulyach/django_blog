@@ -13,7 +13,7 @@ urlpatterns = [
     path('board/', views.board, name='board'),
     path('chat/', views.chat_lobby, name='chat_lobby'),
     path('chat/<room_name>/', views.chat_room, name='chat_room'),
-    path('start_comm', views.start_comm, name='start_comm'),
+    #path('start_comm', views.start_comm, name='start_comm'),
     path('send_OTP/<message>', views.send_OTP, name='send_OTP'),
     path('enter_OTP/<mobileno>/<message>', views.enter_OTP, name='enter_OTP'),
 ]

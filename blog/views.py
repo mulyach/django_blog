@@ -28,10 +28,12 @@ def index(request):
     context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all()}
     return render(request,'blog_t/index.html',context)
 
+""" #block no longer needed
 @staff_member_required()
 def start_comm(request):
     startWSchat(request)
     return render(request,'messages.html',{'messages':['Server started']})
+"""
 
 def show_article(request,article_id):
     current_article = Article.objects.get(id=article_id)
@@ -202,18 +204,16 @@ def sendWSchat(request,message):
 def send_OTP(request,message):
     message = '~01'+message
     lanjut,result = True,''
-    while result != 'S':
-        print(message)
-        sendWSchat(request,message)
-        while lanjut:
-            result = json.loads(utama_ws.recv())['message']
-            if result in sent_list:
-                sent_list.remove(result)
-            else:
-                print('RESULT',result)
-                lanjut = False
-        time.sleep(1)
-    return render(request,'messages.html',{'messages':['OTP sent to '+message[3:]]})
+    print(message)
+    sendWSchat(request,message)
+    while lanjut:
+        result = json.loads(utama_ws.recv())['message']
+        if result in sent_list:
+            sent_list.remove(result)
+        else:
+            print('RESULT',result)
+            lanjut = False
+    return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
 
 def enter_OTP(request,mobileno,message):
     global utama_ws,sent_list
