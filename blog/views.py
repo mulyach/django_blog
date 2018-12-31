@@ -181,7 +181,11 @@ def startWSchat(request):
 
 def connectWSchat(request,room_name):
     global utama_ws
-    utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
+    try:
+        utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
+    except websocket._exceptions.WebSocketBadStatusException:
+        ChatConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
+        utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
 
 def sendWSchat(request,message):
     global utama_ws,sent_list
