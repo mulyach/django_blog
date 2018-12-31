@@ -185,6 +185,10 @@ def connectWSchat(room_name):
 def sendWSchat(message):
     global utama_ws,sent_list
     lanjut = True
+    try:
+        utama_ws
+    except NameError:
+        startWSchat()
     while lanjut:
         try:
             utama_ws.send(json.dumps({'message':message}))
