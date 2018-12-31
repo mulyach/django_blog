@@ -207,7 +207,7 @@ def send_OTP(request,message):
     lanjut,result,attempt = True,'',1
     print(message)
     sendWSchat(request,message)
-    while result != 'S' and attempt<=max_attempt:
+    while result!='S' and attempt<=max_attempt:
         print('result and attempt',result,attempt)
         while lanjut:
             try:
@@ -221,6 +221,7 @@ def send_OTP(request,message):
                 print('RESULT',result)
                 lanjut = False
         attempt+=1
+        print('tail:result and attempt',result,attempt)
     return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
 
 def enter_OTP(request,mobileno,message):
