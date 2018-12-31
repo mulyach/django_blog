@@ -30,8 +30,6 @@ def index(request):
 
 @staff_member_required()
 def start_comm(request):
-    global current_domain
-    current_domain = get_current_site(request).domain
     startWSchat()
     return render(request,'messages.html',{'messages':['Server started']})
 
@@ -179,8 +177,8 @@ def startWSchat():
     sent_list = []
 
 def connectWSchat(room_name):
-    global utama_ws,current_domain
-    utama_ws = websocket.create_connection('ws://'+current_domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
+    global utama_ws
+    utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
 
 def sendWSchat(message):
     global utama_ws,sent_list
