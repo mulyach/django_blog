@@ -211,9 +211,12 @@ def send_OTP(request,message):
         while lanjut:
             try:
                 result = json.loads(utama_ws.recv())['message']
+            except (ConnectionResetError,BrokenPipeError):
+                print('RECONNECTING')
+                connectWSchat(request,os.environ.get('MPATH', '__utama__'))
             except websocket._exceptions.WebSocketConnectionClosedException:
                 print('RESTARTING CHAT ROOM')
-                startWSchat(request)            
+                startWSchat(request)
             if result in sent_list:
                 sent_list.remove(result)
             else:
@@ -227,10 +230,13 @@ def enter_OTP(request,mobileno,message):
     message = '~02'+mobileno+'$'+message
     sendWSchat(request,message)
     lanjut,result,attempt = True,'',1
-    while result!='S' and attempt<=max_attempt:
+    while result not in ['Y','N'] and attempt<=max_attempt:
         while lanjut:
             try:
                 result = json.loads(utama_ws.recv())['message']
+            except (ConnectionResetError,BrokenPipeError):
+                print('RECONNECTING')
+                connectWSchat(request,os.environ.get('MPATH', '__utama__'))
             except websocket._exceptions.WebSocketConnectionClosedException:
                 print('RESTARTING CHAT ROOM')
                 startWSchat(request)
