@@ -193,6 +193,9 @@ def sendWSchat(message):
         except (ConnectionResetError,BrokenPipeError):
             print('RECONNECTING')
             connectWSchat(os.environ.get('MPATH', '__utama__'))
+        except websocket._exceptions.WebSocketConnectionClosedException:
+            print('RESTARTING CHAT ROOM')
+            startWSchat()
 
 def send_OTP(request,message):
     message = '~01'+message
@@ -207,7 +210,7 @@ def send_OTP(request,message):
             else:
                 print('RESULT',result)
                 lanjut = False
-        time.sleep(2)
+        time.sleep(1)
     return render(request,'messages.html',{'messages':['OTP sent to '+message[3:]]})
 
 def enter_OTP(request,mobileno,message):
