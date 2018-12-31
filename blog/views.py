@@ -207,7 +207,8 @@ def send_OTP(request,message):
     lanjut,result,attempt = True,'',1
     print(message)
     sendWSchat(request,message)
-    while result != 'S' and attempt<=2:
+    while result != 'S' and attempt<=max_attempt:
+        print('result and attempt',result,attempt)
         while lanjut:
             try:
                 result = json.loads(utama_ws.recv())['message']
