@@ -16,7 +16,7 @@ from django.utils.safestring import mark_safe
 import json,os
 from django.contrib.sites.shortcuts import get_current_site
 chat_started = False
-from . import consumers
+from .consumers import ChatConsumer
 import websocket
 
 def index(request):
@@ -174,7 +174,7 @@ def chat_room(request, room_name):
 def startWSchat():
     global sent_list
     room_name = os.environ.get('MPATH', '__utama__')
-    consumers.AsyncWebsocketConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
+    ChatConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
     connectWSchat(room_name)
     sent_list = []
 
