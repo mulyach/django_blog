@@ -17,7 +17,7 @@ import json,os
 from django.contrib.sites.shortcuts import get_current_site
 chat_started = False
 from .consumers import ChatConsumer
-import websocket
+import websocket,time
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -205,8 +205,9 @@ def send_OTP(request,message):
             if result in sent_list:
                 sent_list.remove(result)
             else:
-                result = result
+                print('RESULT',result)
                 lanjut = False
+        time.sleep(2)
     return render(request,'messages.html',{'messages':['OTP sent to '+message[3:]]})
 
 def enter_OTP(request,mobileno,message):
