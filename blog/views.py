@@ -207,7 +207,11 @@ def send_OTP(request,message):
     print(message)
     sendWSchat(request,message)
     while lanjut:
-        result = json.loads(utama_ws.recv())['message']
+        try:
+            result = json.loads(utama_ws.recv())['message']
+        except websocket._exceptions.WebSocketConnectionClosedException:
+            print('RESTARTING CHAT ROOM')
+            startWSchat(request)            
         if result in sent_list:
             sent_list.remove(result)
         else:
