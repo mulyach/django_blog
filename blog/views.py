@@ -208,7 +208,6 @@ def send_OTP(request,message):
     print(message)
     sendWSchat(request,message)
     while result!='S' and attempt<=max_attempt:
-        print('result and attempt',result,attempt)
         while lanjut:
             try:
                 result = json.loads(utama_ws.recv())['message']
@@ -218,10 +217,9 @@ def send_OTP(request,message):
             if result in sent_list:
                 sent_list.remove(result)
             else:
-                print('RESULT',result)
                 lanjut = False
+        print('RESULT:{}. Attempt:{}'.format(result,attempt))
         attempt+=1
-        print('tail:result and attempt',result,attempt)
     return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
 
 def enter_OTP(request,mobileno,message):
