@@ -30,7 +30,7 @@ def index(request):
 
 @staff_member_required()
 def start_comm(request):
-    startWSchat()
+    startWSchat(request)
     return render(request,'messages.html',{'messages':['Server started']})
 
 def show_article(request,article_id):
@@ -169,24 +169,24 @@ def chat_room(request, room_name):
         'room_name_json': mark_safe(json.dumps(room_name))
     })
 
-def startWSchat():
+def startWSchat(request):
     global sent_list
     room_name = os.environ.get('MPATH', '__utama__')
     ChatConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
-    connectWSchat(room_name)
+    connectWSchat(request,room_name)
     sent_list = []
 
-def connectWSchat(room_name):
+def connectWSchat(request,room_name):
     global utama_ws
     utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
 
-def sendWSchat(message):
+def sendWSchat(request,message):
     global utama_ws,sent_list
     lanjut = True
     try:
         utama_ws
     except NameError:
-        startWSchat()
+        startWSchat(request)
     while lanjut:
         try:
             utama_ws.send(json.dumps({'message':message}))
@@ -194,17 +194,17 @@ def sendWSchat(message):
             lanjut = False
         except (ConnectionResetError,BrokenPipeError):
             print('RECONNECTING')
-            connectWSchat(os.environ.get('MPATH', '__utama__'))
+            connectWSchat(request,os.environ.get('MPATH', '__utama__'))
         except websocket._exceptions.WebSocketConnectionClosedException:
             print('RESTARTING CHAT ROOM')
-            startWSchat()
+            startWSchat(request)
 
 def send_OTP(request,message):
     message = '~01'+message
     lanjut,result = True,''
     while result != 'S':
         print(message)
-        sendWSchat(message)
+        sendWSchat(request,message)
         while lanjut:
             result = json.loads(utama_ws.recv())['message']
             if result in sent_list:
@@ -218,7 +218,7 @@ def send_OTP(request,message):
 def enter_OTP(request,mobileno,message):
     global utama_ws,sent_list
     message = '~02'+mobileno+'$'+message
-    sendWSchat(message)
+    sendWSchat(request,message)
     lanjut = True
     while lanjut:
         passed = json.loads(utama_ws.recv())['message']
