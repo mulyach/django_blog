@@ -233,7 +233,7 @@ def send_OTP(request,message):
 
 def enter_OTP(request,mobileno,message):
     global utama_ws,sent_list
-    message = '~02'+mobileno+'$'+message
+    message = '~02'+mobileno+'|'+message
     sendWSchat(request,message)
     lanjut,result,attempt = True,'',1
     while result not in ['Y','N'] and attempt<=max_attempt:
