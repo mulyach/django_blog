@@ -194,6 +194,8 @@ def sendWSchat(request,message):
         utama_ws
     except NameError:
         startWSchat(request)
+    print('CONNECTING')
+    connectWSchat(request,os.environ.get('MPATH', '__utama__'))
     while lanjut:
         try:
             utama_ws.send(json.dumps({'message':message}))
