@@ -27,9 +27,9 @@
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
-        var m = confirm("You are disconnected. OK to reconnect, or Cancel to stay unconnected.");
+        var m = confirm("You are no longer connected. Click OK to reconnect.");
         if (m) {
-            var chatSocket = WebSocket(
+            var chatSocket = new WebSocket(
                 ws_scheme + '://' + window.location.host +
                 '/ws/chat/' + roomName + '/');            
         }
