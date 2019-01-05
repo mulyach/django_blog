@@ -18,6 +18,10 @@
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
+    chatSocket.onopen = function(e) {
+        document.querySelector('#chat-log').value = (prev_log);
+    };
+
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
@@ -31,7 +35,6 @@
         if (m) {
             var prev_log = document.querySelector('#chat-log').value;
             location.reload();
-            document.querySelector('#chat-log').value += (prev_log);
         }
     };
 
