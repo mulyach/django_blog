@@ -29,9 +29,9 @@
         console.error('Chat socket closed unexpectedly');
         var m = confirm("You are no longer connected. Click OK to reconnect.");
         if (m) {
-            var chatSocket = new WebSocket(
-                ws_scheme + '://' + window.location.host +
-                '/ws/chat/' + roomName + '/');            
+            var prev_log = document.querySelector('#chat-log').value;
+            location.reload();
+            document.querySelector('#chat-log').value += (prev_log);
         }
     };
 
