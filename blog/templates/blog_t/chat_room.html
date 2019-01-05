@@ -22,10 +22,17 @@
         var data = JSON.parse(e.data);
         var message = data['message'];
         document.querySelector('#chat-log').value += (message + '\n');
+        document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight
     };
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
+        var m = confirm("You are disconnected. OK to reconnect, or Cancel to stay unconnected.");
+        if (m) {
+            var chatSocket = WebSocket(
+                ws_scheme + '://' + window.location.host +
+                '/ws/chat/' + roomName + '/');            
+        }
     };
 
     document.querySelector('#chat-message-input').focus();
