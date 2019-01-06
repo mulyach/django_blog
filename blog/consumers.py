@@ -39,9 +39,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     ##receive message from room group
     async def chat_message(self, event):
-        message = event.get('message','')
-        join = event.get('join','')
-        logs = event.get('logs','')
+        message = event['message']
+        join = event['join']
+        logs = event['logs']
 
         await self.send(text_data=json.dumps({
             'message': message,

@@ -38,7 +38,7 @@
                         <a href="{% url 'blog:image' user.get_username %}">Upload Image</a><br>
                         <a href="{% url 'blog:my_articles' user.get_username %}">My Articles</a>
                         <p><a href="{% url 'logout' %}?next={{request.path}}">Logout</a></p>
-                        <input type="text" value={{user.get_username}} id="username" style="display:none;">
+                        <input type="text" value={%if user.is_staff%}${%endif%}{{user.get_username}} id="username" style="display:none;">
                     {% else %}
                         <a href="{% url 'login' %}?next={{request.path}}">Login</a><br>
                         <p><a href="{% url 'signup' %}?next={{request.path}}">Signup</a></p>
