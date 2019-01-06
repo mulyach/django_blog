@@ -1,5 +1,6 @@
 from django.shortcuts import render,get_object_or_404
-from django.http import HttpResponseRedirect, Http404 #, StreamingHttpResponse, HttpResponse
+from django.http import HttpResponseRedirect, Http404, HttpResponse #, StreamingHttpResponse
+from django.template.loader import get_template
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -19,6 +20,7 @@ chat_started = False
 from .consumers import ChatConsumer
 import websocket,time
 max_attempt = 2
+chat_ready_def = True
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -26,7 +28,7 @@ def index(request):
     ct.counts += 1
     ct.save()
     latest_article_list = Article.objects.filter(display=True,contributor_author=None).order_by('-pub_date')[:20]
-    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all()}
+    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))}
     return render(request,'blog_t/index.html',context)
 
 """ #block no longer needed
@@ -56,10 +58,10 @@ def show_article(request,article_id):
             newcomment.email_address = add_comment.cleaned_data['email_address']
             newcomment.writeup = add_comment.cleaned_data['writeup']
             newcomment.save()
-            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(),'add_comment_form':Add_Comment()})
+            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def)),'add_comment_form':Add_Comment()})
     else:
         add_comment = Add_Comment()
-    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(),'add_comment_form':add_comment})
+    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def)),'add_comment_form':add_comment})
 
 """
 def hello():
@@ -73,11 +75,11 @@ def test_stream(request):
 def category_list(request,category_label):
     category = get_object_or_404(Category,category_label=category_label)
     articles = Category.objects.get(category_label=category_label).article_set.filter(display=True)
-    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all()})
+    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
 
 def my_articles_list(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
-    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all()})
+    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
 
 def upload_image(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
@@ -88,12 +90,12 @@ def upload_image(request,username):
             if article in articles or User.objects.get(username=username) in User.objects.filter(is_staff=True):
                 newimage = article.image_set.create(caption = form.cleaned_data['caption'], img_file = form.cleaned_data['img_file'])
                 newimage.save()
-                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all()})
+                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
             else:
-                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all()})
+                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
     else:
         form = Image_Form()
-    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all()})
+    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
 
 @login_required()
 def compose(request,username):
@@ -108,10 +110,10 @@ def compose(request,username):
             newarticle.pub_date = datetime.datetime.now()
             newarticle.display = False
             newarticle.save()
-            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all()})
+            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
     else:
         form = Compose_Form()
-    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all()})
+    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
 
 #manual way of adding comment
 """
@@ -151,7 +153,7 @@ def signature(request):
         """
         try:
             newsignature.save()
-            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all()})
+            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', chat_ready_def))})
         except:
             pass
         return render(request,'blog_t/signature.html')            
@@ -168,9 +170,16 @@ def chat_lobby(request):
     return render(request, 'blog_t/chat_lobby.html', {})
 
 def chat_room(request, room_name):
-    return render(request, 'blog_t/chat_room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
-    })
+    t = get_template('blog_t/chat_room.html')
+    html = t.render({'room_name_json': mark_safe(json.dumps(room_name))})
+    return HttpResponse(html)    
+    """ #cs_chat is better to launch from base.html using javascript
+    scrp = '<script>window.open("https://lkestories.herokuapp.com/chat/'+room_name+'/", "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=750,height=400")</script>'
+    return HttpResponse(scrp)
+    """
+
+def cs_chat_room(request,room_name,username):
+    return render(request,'blog_t/cs_chat_room.html',{'username':username,'room_name_json': mark_safe(json.dumps(room_name))})
 
 def startWSchat(request):
     global sent_list

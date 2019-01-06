@@ -6,13 +6,15 @@
     <title>Chat Room</title>
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+    <textarea id="chat-log" cols="100" rows="20" disabled></textarea><br/>
     <textarea id="chat-message-input" cols="100" rows="3"></textarea><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+    <input type="text" value={{username}} id="username" style="display:none;">
 </body>
 <script>
     var roomName = {{ room_name_json }};
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var username = document.getElementById("username").value;
 
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
@@ -44,7 +46,7 @@
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
         var messageInputDom = document.querySelector('#chat-message-input');
-        var message = messageInputDom.value;
+        var message = '<'+username+'> '+messageInputDom.value;
         chatSocket.send(JSON.stringify({
             'message': message
         }));

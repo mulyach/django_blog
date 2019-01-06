@@ -7,6 +7,24 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
 </head>
+<style>
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+</style>
 <body>
     <div class="container-fluid">
         <div class="row">
@@ -20,9 +38,14 @@
                         <a href="{% url 'blog:image' user.get_username %}">Upload Image</a><br>
                         <a href="{% url 'blog:my_articles' user.get_username %}">My Articles</a>
                         <p><a href="{% url 'logout' %}?next={{request.path}}">Logout</a></p>
+                        <input type="text" value={{user.get_username}} id="username" style="display:none;">
                     {% else %}
                         <a href="{% url 'login' %}?next={{request.path}}">Login</a><br>
-                        <a href="{% url 'signup' %}?next={{request.path}}">Signup</a>
+                        <p><a href="{% url 'signup' %}?next={{request.path}}">Signup</a></p>
+                        <input type="text" value="" id="username" style="display:none;">
+                    {% endif %}
+                    {% if chat_ready %}
+                        <a href="#" onclick="openChat();return false;">Chat</a>
                     {% endif %}
                 </ul>
                 <ul class = "sidebar-nav">
@@ -55,5 +78,51 @@
             </div>
         </div>
     </div>
+    <div class="form-popup" id="myForm">
+      <form action="" class="form-container">
+        <label for="initials"><b>Chat Id</b></label>
+        <input id="initials" type="text" placeholder="First name or Initials" name="initials">
+        <button id="submitInitials_btn" type="button" class="btn" onclick="submitInitials()">Enter chat</button>
+        <button type="button" class="btn cancel" onclick="closePopup()">Cancel</button>
+      </form>
+    </div>
 </body>
+<script>
+    function openChat(){
+        var username = document.getElementById("username").value;
+        if (username){
+            enterChat(username);
+            }
+        else {
+            document.getElementById("myForm").style.display = "block";
+            document.getElementById("initials").focus();
+            }
+        }
+    function closePopup(){
+        document.getElementById("myForm").style.display = "none";
+    }
+
+    function submitInitials(){
+        var initials = document.getElementById("initials").value;
+        if (initials.trim()){
+            closePopup();
+            enterChat(initials);}
+        else{
+            alert("Please enter first name/initials for chat id");}
+            document.getElementById("initials").value = "";
+    }
+
+    function enterChat(username){
+        var unique_id = makeid();
+        window.open('cs_chat/'+unique_id+'/'+username+'/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=750,height=400")
+    }
+
+    function makeid() {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (var i = 0; i < 6; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      return text;
+    }    
+</script>
 </html>
