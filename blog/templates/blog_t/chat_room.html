@@ -27,7 +27,7 @@
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
-        var m = confirm("You are no longer connected. Click OK to reconnect.");
+        var m = confirm("Connection is lost. Click OK to reconnect.");
         if (m) {
             location.reload();}
         else {

@@ -6,8 +6,8 @@
     <title>Chat Room</title>
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20" disabled></textarea><br/>
-    <textarea id="chat-message-input" cols="100" rows="3"></textarea><br/>
+    <textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>
+    <input id="chat-message-input" type="text" size=56"><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
     <input type="text" value={{username}} id="username" style="display:none;">
 </body>
@@ -16,20 +16,35 @@
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
 
+
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
+    chatSocket.onopen = function(e) {
+        chatSocket.send(JSON.stringify({
+            'join': username}));
+    };
+
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
-        document.querySelector('#chat-log').value += (message + '\n');
-        document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight
+        var join = data['join'];
+        var prev_logs = data['logs'];
+
+        if (join && join != username){
+            chatSocket.send(JSON.stringify({
+                'logs': document.querySelector('#chat-log').value}));}
+        else if (prev_logs){
+            document.querySelector('#chat-log').value = (prev_logs);}
+        else if (message){
+            document.querySelector('#chat-log').value += (message + '\n');}
+        document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
     };
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
-        var m = confirm("You are no longer connected. Click OK to reconnect.");
+        var m = confirm("Connection is lost. Click OK to reconnect.");
         if (m) {
             location.reload();}
         else {
@@ -52,5 +67,6 @@
         }));
         messageInputDom.value = '';
     };
+
 </script>
 </html>
