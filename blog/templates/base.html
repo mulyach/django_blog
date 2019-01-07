@@ -20,7 +20,7 @@
 
 /* Add styles to the form container */
 .form-container {
-  max-width: 300px;
+  max-width: 200px;
   padding: 10px;
   background-color: white;
 }
@@ -81,7 +81,7 @@
     <div class="form-popup" id="myForm">
       <form action="" class="form-container">
         <label for="initials"><b>Chat Id</b></label>
-        <input id="initials" type="text" placeholder="First name or Initials" name="initials">
+        <input id="initials" type="text" placeholder="First name or Initials" name="initials" size="16">
         <button id="submitInitials_btn" type="button" class="btn" onclick="submitInitials()">Enter chat</button>
         <button type="button" class="btn cancel" onclick="closePopup()">Cancel</button>
       </form>
@@ -106,7 +106,7 @@
         var initials = document.getElementById("initials").value;
         if (initials.trim()){
             closePopup();
-            enterChat(initials);}
+            enterChat('_'+initials);}
         else{
             alert("Please enter first name/initials for chat id");}
             document.getElementById("initials").value = "";
@@ -114,7 +114,7 @@
 
     function enterChat(username){
         var unique_id = makeid();
-        window.open('cs_chat/'+unique_id+'/'+username+'/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
+        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+username+'/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
     }
 
     function makeid() {

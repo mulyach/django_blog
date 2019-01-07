@@ -24,6 +24,7 @@
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
             'join': username}));
+        document.querySelector('#chat-log').value = 'Our staff will attend to you shortly\n';
     };
 
     chatSocket.onmessage = function(e) {
@@ -48,7 +49,7 @@
         if (m) {
             location.reload();}
         else {
-            document.querySelector('#chat-log').value += "<SYSTEM> Chat has ended."
+            document.querySelector('#chat-log').value += "Chat has ended"
         }
     };
 
@@ -61,11 +62,13 @@
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
         var messageInputDom = document.querySelector('#chat-message-input');
-        var message = '<'+username+'> '+messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-        messageInputDom.value = '';
+        if (messageInputDom.value.trim()){
+            var message = '<'+username+'> '+messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        }
     };
 
 </script>
