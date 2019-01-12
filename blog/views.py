@@ -180,7 +180,7 @@ def chat_room(request, room_name):
 
 def cs_chat_room(request,room_name,username):
     if bool(os.environ.get('CHAT_READY', cs_chat_ready_def)):
-        return render(request,'blog_t/cs_chat_room.html',{'username':username,'room_name_json': mark_safe(json.dumps(room_name))})
+        return render(request,'blog_t/cs_chat_room.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'username':username,'room_name_json': mark_safe(json.dumps(room_name))})
     else:
         raise Http404()
 

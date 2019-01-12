@@ -10,12 +10,17 @@
     <input id="chat-message-input" placeholder="Type your chat here" type="text" size=56"><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
     <input type="text" value={{username}} id="username" style="display:none;">
+    <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
 </body>
 <script>
     var roomName = {{ room_name_json }};
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
+    var cscRoom = document.getElementById("cscRoom").value;
 
+    var cscSocket = new WebSocket(
+        ws_scheme + '://' + window.location.host +
+        '/ws/chat/' + cscRoom + '/');
 
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
@@ -24,7 +29,9 @@
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
             'join': username}));
-        document.querySelector('#chat-log').value = 'Our staff will attend to you shortly\n';
+        document.querySelector('#chat-log').value = 'Our staff will attend to you shortly\nNever reveal your password in the chat\n';
+        cscSocket.send(JSON.stringify({
+            'message': roomName+'|'+username}));
     };
 
     chatSocket.onmessage = function(e) {
