@@ -26,10 +26,37 @@
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
+    var oldTitle = document.title;
+    var msg = "New!";
+    var timeoutId;
+
+    function checkPageFocus() {
+        if (document.hasFocus()) {
+            clear();
+        }
+    }
+
+    function clear() {
+        clearInterval(timeoutId);
+        document.title = oldTitle;
+        timeoutId = null;
+    };
+
+    newExcitingAlerts = (function () {
+        var blink = function() { document.title = document.title == msg ? ' ' : msg; };
+        return function () {
+            if (!timeoutId) {
+                timeoutId = setInterval(blink, 1000);
+            }
+        };
+    }());
+
+    setInterval(checkPageFocus, 300);
+
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
             'join': username}));
-        document.querySelector('#chat-log').value = 'Our staff will attend to you shortly\nNever reveal your password in the chat\n';
+        document.querySelector('#chat-log').value = 'Our staff will attend to you shortly\nNever reveal your password to our staff\n';
         cscSocket.send(JSON.stringify({
             'message': roomName+'|'+username}));
     };
@@ -48,6 +75,7 @@
         else if (message){
             document.querySelector('#chat-log').value += (message + '\n');}
         document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
+        newExcitingAlerts();
     };
 
     chatSocket.onclose = function(e) {
