@@ -75,6 +75,7 @@
         else if (message){
             document.querySelector('#chat-log').value += (message + '\n');}
         document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
+        window.getAttention();
         newExcitingAlerts();
     };
 
