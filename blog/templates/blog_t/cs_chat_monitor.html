@@ -5,7 +5,7 @@
     <title>Chat Monitor</title>
 </head>
 <body>
-    <textarea id="chat-log" cols="52" rows="25" disabled></textarea><br/>
+    <textarea id="chat-log" cols="70" rows="42" disabled></textarea><br/> <!-- cols="52" rows="25" -->
     <input type="text" value={{username}} id="username" style="display:none;">
     <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
 </body>
@@ -48,7 +48,7 @@
 
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
-            'join': username}));
+            'action': '>'+username}));
         justjoined = true;
     };
 
@@ -56,10 +56,10 @@
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
-        var join = data['join'];
+        var action = data['action'];
         var prev_logs = data['logs'];
 
-        if (message.indexOf('|') == -1){
+        if (message.indexOf('|')==-1){
             if (prev_logs && justjoined){
                 document.querySelector('#chat-log').value = (prev_logs);
                 justjoined = false;}

@@ -3,6 +3,7 @@
 <head>
     <title></title>
     <meta charset="utf-8">
+    <title>LKE Stories</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
@@ -38,7 +39,7 @@
                         <a href="{% url 'blog:image' user.get_username %}">Upload Image</a><br>
                         <a href="{% url 'blog:my_articles' user.get_username %}">My Articles</a>
                         <p><a href="{% url 'logout' %}?next={{request.path}}">Logout</a></p>
-                        <input type="text" value={%if user.is_staff%}${%endif%}{{user.get_username}} id="username" style="display:none;">
+                        <input type="text" value={%if user.is_staff%}${%else%}~{%endif%}{{user.get_username}} id="username" style="display:none;">
                     {% else %}
                         <a href="{% url 'login' %}?next={{request.path}}">Login</a><br>
                         <p><a href="{% url 'signup' %}?next={{request.path}}">Signup</a></p>
@@ -93,7 +94,7 @@
 <script>
     function openChatMonitor(){
         var username = document.getElementById("username").value;
-        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat_monitor/'+username+'/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=200,width=400,height=400")
+        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat_monitor/'+username+'/', "_blank") //, "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=200,width=400,height=400")
         }
     function openChat(){
         var username = document.getElementById("username").value;
