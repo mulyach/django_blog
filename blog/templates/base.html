@@ -45,6 +45,9 @@
                         <input type="text" value="" id="username" style="display:none;">
                     {% endif %}
                     {% if chat_ready %}
+                        {%if user.is_staff%}
+                            <a href="#" onclick="openChatMonitor();return false;">Chat Monitor</a><br>
+                        {% endif %}
                         <a href="#" onclick="openChat();return false;">Chat</a>
                     {% endif %}
                 </ul>
@@ -88,6 +91,10 @@
     </div>
 </body>
 <script>
+    function openChatMonitor(){
+        var username = document.getElementById("username").value;
+        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat_monitor/'+username+'/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=200,width=400,height=400")
+        }
     function openChat(){
         var username = document.getElementById("username").value;
         if (username){
@@ -96,6 +103,11 @@
         else {
             document.getElementById("myForm").style.display = "block";
             document.getElementById("initials").focus();
+            document.getElementById("initials").onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.getElementById("submitInitials_btn").click();
+                }
+            };
             }
         }
     function closePopup(){

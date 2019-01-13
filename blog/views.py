@@ -178,6 +178,10 @@ def chat_room(request, room_name):
     return HttpResponse(scrp)
     """
 
+@staff_member_required()
+def cs_chat_monitor(request,username):
+    return render(request,'blog_t/cs_chat_monitor.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'username':username})
+
 def cs_chat_room(request,room_name,username):
     if bool(os.environ.get('CHAT_READY', cs_chat_ready_def)):
         return render(request,'blog_t/cs_chat_room.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'username':username,'room_name_json': mark_safe(json.dumps(room_name))})

@@ -1,0 +1,84 @@
+<!DOCTYPE html target="_blank">
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Monitor</title>
+</head>
+<body>
+    <textarea id="chat-log" cols="52" rows="25" disabled></textarea><br/>
+    <input type="text" value={{username}} id="username" style="display:none;">
+    <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
+</body>
+<script>
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var username = document.getElementById("username").value;
+    var roomName = document.getElementById("cscRoom").value;
+    var justjoined = false;
+
+    var chatSocket = new WebSocket(
+        ws_scheme + '://' + window.location.host +
+        '/ws/chat/' + roomName + '/');
+
+    var oldTitle = document.title;
+    var msg = "New!";
+    var timeoutId;
+
+    function checkPageFocus() {
+        if (document.hasFocus()) {
+            clear();
+        }
+    }
+
+    function clear() {
+        clearInterval(timeoutId);
+        document.title = oldTitle;
+        timeoutId = null;
+    };
+
+    newExcitingAlerts = (function () {
+        var blink = function() { document.title = document.title == msg ? ' ' : msg; };
+        return function () {
+            if (!timeoutId) {
+                timeoutId = setInterval(blink, 1000);
+            }
+        };
+    }());
+
+    setInterval(checkPageFocus, 300);
+
+    chatSocket.onopen = function(e) {
+        chatSocket.send(JSON.stringify({
+            'join': username}));
+        justjoined = true;
+    };
+
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        var join = data['join'];
+        var prev_logs = data['logs'];
+
+        if (message.indexOf('|') == -1){
+            if (prev_logs && justjoined){
+                document.querySelector('#chat-log').value = (prev_logs);
+                justjoined = false;}
+            else if (message){
+                document.querySelector('#chat-log').value += (message + '\n');}
+            document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
+            newExcitingAlerts();
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+        var m = confirm("Connection is lost. Click OK to reconnect.");
+        if (m) {
+            location.reload();}
+        else {
+            document.querySelector('#chat-log').value += "Chat has ended"
+        }
+    };
+
+</script>
+</html>
