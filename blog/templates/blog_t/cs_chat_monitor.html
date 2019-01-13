@@ -59,7 +59,7 @@
         var action = data['action'];
         var prev_logs = data['logs'];
 
-        if (message.indexOf('|')==-1){
+        if (message.indexOf('|')==-1 and message.indexOf('!')==-1){
             if (prev_logs && justjoined){
                 document.querySelector('#chat-log').value = (prev_logs);
                 justjoined = false;}
