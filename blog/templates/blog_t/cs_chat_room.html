@@ -60,7 +60,7 @@
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
             'action': '>'+username}));
-        document.querySelector('#chat-log').value = 'Our staff will attend to you shortly\nNever reveal your password to our staff\n';
+        document.querySelector('#chat-log').value = 'Never reveal your password to our staff\n';
         cscSocket.send(JSON.stringify({
             'message': roomName+'|'+username}));
     };
