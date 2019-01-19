@@ -63,7 +63,7 @@
             if (prev_logs && justjoined){
                 document.querySelector('#chat-log').value = (prev_logs);
                 justjoined = false;}
-            else if (message){
+            if (message){
                 document.querySelector('#chat-log').value += (message + '\n');}
             document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
             newExcitingAlerts();
@@ -78,6 +78,13 @@
         else {
             document.querySelector('#chat-log').value += "Chat has ended"
         }
+    };
+
+    window.onunload = function (e) {
+        chatSocket.send(JSON.stringify({
+            'action': '<'+username}));
+        (e || window.event).returnValue = null;
+        return null;
     };
 
 </script>
