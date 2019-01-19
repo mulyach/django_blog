@@ -21,6 +21,7 @@
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
     var cscRoom = document.getElementById("cscRoom").value;
+    var intro = '~Never reveal your password to our staff~'
 
     var cscSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
@@ -60,7 +61,7 @@
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
             'action': '>'+username}));
-        document.querySelector('#chat-log').value='Never reveal your password to our staff\n';
+        document.querySelector('#chat-log').value=intro+'\n';
         cscSocket.send(JSON.stringify({
             'message': roomName+'|'+username}));
     };

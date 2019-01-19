@@ -15,6 +15,36 @@
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
+    var timeoutInMiliseconds = 300000;
+    var timeoutId; 
+
+    function startTimer() { 
+        // window.setTimeout returns an Id that can be used to start and stop a timer
+        timeoutId = window.setTimeout(doInactive, timeoutInMiliseconds)
+    }
+
+    function doInactive() {
+        chatSocket.close()
+        alert('Auto-update stopped due to inactivity.\nReload the page to resume auto-update.')
+    }
+           
+    function resetTimer() { 
+        window.clearTimeout(timeoutId)
+        startTimer();
+    }
+
+    function setupTimers () {
+        document.addEventListener("mousemove", resetTimer, false);
+        document.addEventListener("mousedown", resetTimer, false);
+        document.addEventListener("keypress", resetTimer, false);
+        document.addEventListener("touchmove", resetTimer, false);
+         
+        startTimer();
+    }
+     
+    setupTimers();
+
+
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
@@ -41,5 +71,6 @@
 
         messageInputDom.value = '';
     };
+
 </script>
 </html>
