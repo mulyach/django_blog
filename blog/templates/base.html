@@ -123,12 +123,13 @@
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
     var username = document.getElementById("username").value;
-    var client = false;
     var unique_id = '';
     var requestingRTS = false;
     var requestingARL = false;
-
+    /*
+    var client = false;
     if (username){client = true};
+    */
 
     function openChatMonitor(){
         window.open(window.location.protocol+'//'+window.location.host+'/cs_chat_monitor/'+username+'/', "_blank") //, "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=200,width=400,height=400")
@@ -179,7 +180,7 @@
                 ul.appendChild(li);
             }            
             document.getElementById("room-lists").style.display = "block";
-        } else if (requestingARL && action=='ARL'){
+        } /*else if (requestingARL && action=='ARL'){
             var lst = JSON.parse(logs.replace(/'/g,'"'))
             requestingARL = false;
             if (lst[0] == 'zzz'){
@@ -188,9 +189,9 @@
                 do {
                 unique_id = makeid();
                 } while (lst.includes(unique_id));
-                window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+window.username+'/Chat Room/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
+                enterChat();                
             }
-        }
+        }*/
     };
 
     function openChat(){
@@ -225,11 +226,18 @@
             document.getElementById("initials").value = "";
     }
 
+    function enterChat(){
+        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+window.username+'/Chat Room/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
+    }
+
     function requestChat(){           //(username)
+        /*
         chatSocket.send(JSON.stringify({
             'action': 'ARL?'}));            //ARL = all room list
         requestingARL = true;
         if (!client){alert('Please allow pop up for chat window')}
+        */
+        enterChat();
     }
 
     function serveChat(unique_id,username,title){
