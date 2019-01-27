@@ -156,7 +156,7 @@
                 var alink = document.createElement("a");
                 alink.appendChild(linkText);
                 alink.href = "#";
-                alink.setAttribute('onclick',"serveChat('"+room_el[1]+"','"+username+"','"+room_el[0]+"');return false;");
+                alink.setAttribute('onclick',"serveChat('"+room_el[1].split('-')[0]+"','"+username+"','"+room_el[0]+"');return false;");
                 //li.setAttribute('id',abandoned[room]);
                 li.appendChild(alink);
                 ul.appendChild(li);
@@ -170,7 +170,7 @@
                 var alink = document.createElement("a");
                 alink.appendChild(linkText);
                 alink.href = "#";
-                alink.setAttribute('onclick',"serveChat('"+room_el[1]+"','"+username+"','"+room_el[0]+"');return false;");
+                alink.setAttribute('onclick',"serveChat('"+room_el[1].split('-')[0]+"','"+username+"','"+room_el[0]+"');return false;");
                 //li.setAttribute('id',unattended[room]);
                 li.appendChild(alink);
                 ul.appendChild(li);
