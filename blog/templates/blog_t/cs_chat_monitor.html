@@ -10,6 +10,11 @@
     <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
 </body>
 <script>
+    window.onbeforeunload = function (e) {
+        (e || window.event).returnValue = null;
+        return null;
+    };
+
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
     var roomName = document.getElementById("cscRoom").value;
@@ -62,11 +67,12 @@
         if (message.indexOf('|')==-1 && message.indexOf('!')==-1){
             if (prev_logs && justjoined){
                 document.querySelector('#chat-log').value = (prev_logs);
-                justjoined = false;}
+                justjoined = false;
+                newExcitingAlerts();}
             if (message){
-                document.querySelector('#chat-log').value += (message + '\n');}
+                document.querySelector('#chat-log').value += (message + '\n');
+                newExcitingAlerts();}
             document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
-            newExcitingAlerts();
         }
     };
 

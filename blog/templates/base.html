@@ -15,7 +15,14 @@
   bottom: 0;
   right: 15px;
   border: 3px solid #f1f1f1;
-  z-index: 9;
+}
+
+.list-popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 200px;
+  border: 3px solid #f1f1f1;
 }
 
 /* Add styles to the form container */
@@ -24,6 +31,13 @@
   padding: 10px;
   background-color: white;
 }
+
+.list-container {
+  max-width: 500px;
+  padding: 10px;
+  background-color: white;
+}
+
 </style>
 <body>
     <div class="container-fluid">
@@ -47,9 +61,12 @@
                     {% if chat_ready %}
                         {%if user.is_staff%}
                             <a href="#" onclick="openChatMonitor();return false;">Chat Monitor</a><br>
-                        {% endif %}
-                        <a href="#" onclick="openChat();return false;">Chat</a>
+                            <a href="#" onclick="openServeChat();return false;">Serve Chat</a>
+                        {% else %}
+                            <a href="#" onclick="openChat();return false;">Chat</a>
+                        {% endif %}                        
                     {% endif %}
+                    <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
                 </ul>
                 <ul class = "sidebar-nav">
                     {% if categories %}<strong>Categories</strong>
@@ -89,16 +106,93 @@
         <button type="button" class="btn cancel" onclick="closePopup()">Cancel</button>
       </form>
     </div>
+    <div class="list-popup" id="room-lists">
+        <div class="list-container">
+            <strong>Abandoned</strong>
+            <ul id="abandoned_list" style="list-style:none; padding-left: 0;"></ul>
+            <strong>Unattended</strong>
+            <ul id="unattended_list" style="list-style:none; padding-left: 0"></ul>
+            <button type="button" onclick="closeRoomList()">Close</button>
+        </div>
+    </div>
 </body>
 <script>
+    var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var roomName = document.getElementById("cscRoom").value;
+    var chatSocket = new WebSocket(
+        ws_scheme + '://' + window.location.host +
+        '/ws/chat/' + roomName + '/');
+    var username = document.getElementById("username").value;
+    var unique_id = '';
+    var requestingRTS = false;
+    var requestingARL = false;
+
     function openChatMonitor(){
-        var username = document.getElementById("username").value;
         window.open(window.location.protocol+'//'+window.location.host+'/cs_chat_monitor/'+username+'/', "_blank") //, "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=200,width=400,height=400")
         }
+
+    function openServeChat(){
+        chatSocket.send(JSON.stringify({
+            'action': 'RTS?'}));            //RTS = rooms to serve
+        requestingRTS = true;
+    }
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var action = data['action'];
+        var logs = data['logs'];
+        //alert('action: '+action+'; logs: '+logs+'; requestingARL: '+requestingARL)
+        if (requestingRTS && action=='RTS'){
+            var dct = JSON.parse(logs.replace(/'/g,'"'))
+            var abandoned = JSON.parse(dct['abandoned'].replace(/#/g,'"'))
+            var unattended = JSON.parse(dct['unattended'].replace(/#/g,'"'))
+            requestingRTS = false;
+            var ul = document.getElementById("abandoned_list");
+            ul.innerHTML = "";
+            for (room in abandoned){
+                var room_el = abandoned[room].split("@");
+                var li = document.createElement("li");
+                var linkText = document.createTextNode(abandoned[room]);
+                var alink = document.createElement("a");
+                alink.appendChild(linkText);
+                alink.href = "#";
+                alink.setAttribute('onclick',"serveChat('"+room_el[1]+"','"+username+"','"+room_el[0]+"');return false;");
+                //li.setAttribute('id',abandoned[room]);
+                li.appendChild(alink);
+                ul.appendChild(li);
+            }
+            var ul = document.getElementById("unattended_list");
+            ul.innerHTML = "";
+            for (room in unattended){
+                var room_el = unattended[room].split("@");
+                var li = document.createElement("li");
+                var linkText = document.createTextNode(unattended[room]);
+                var alink = document.createElement("a");
+                alink.appendChild(linkText);
+                alink.href = "#";
+                alink.setAttribute('onclick',"serveChat('"+room_el[1]+"','"+username+"','"+room_el[0]+"');return false;");
+                //li.setAttribute('id',unattended[room]);
+                li.appendChild(alink);
+                ul.appendChild(li);
+            }            
+            document.getElementById("room-lists").style.display = "block";
+        } else if (requestingARL && action=='ARL'){
+            var lst = JSON.parse(logs.replace(/'/g,'"'))
+            requestingARL = false;
+            if (lst[0] == 'zzz'){
+                alert('There is currently no staff available. Please return on office hour or drop us an email')
+            } else {
+                do {
+                unique_id = makeid();
+                } while (lst.includes(unique_id));
+                window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+username+'/Chat Room/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
+            }
+        }
+    };
+
     function openChat(){
-        var username = document.getElementById("username").value;
         if (username){
-            enterChat(username);
+            requestChat();
             }
         else {
             document.getElementById("myForm").style.display = "block";
@@ -114,19 +208,29 @@
         document.getElementById("myForm").style.display = "none";
     }
 
+    function closeRoomList() {
+        document.getElementById("room-lists").style.display = "none";
+    }
     function submitInitials(){
         var initials = document.getElementById("initials").value;
         if (initials.trim()){
             closePopup();
-            enterChat('_'+initials);}
+            username = '_'+initials;
+            requestChat();}
         else{
             alert("Please enter first name/initials for chat id");}
             document.getElementById("initials").value = "";
     }
 
-    function enterChat(username){
-        var unique_id = makeid();
-        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+username+'/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
+    function requestChat(){           //(username)
+        chatSocket.send(JSON.stringify({
+            'action': 'ARL?'}));            //ARL = all room list
+        requestingARL = true;
+    }
+
+    function serveChat(unique_id,username,title){
+        closeRoomList();
+        window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+username+'/'+title+'/', "_blank", "")
     }
 
     function makeid() {

@@ -28,7 +28,7 @@ def index(request):
     ct.counts += 1
     ct.save()
     latest_article_list = Article.objects.filter(display=True,contributor_author=None).order_by('-pub_date')[:20]
-    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))}
+    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)),'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))}
     return render(request,'blog_t/index.html',context)
 
 """ #block no longer needed
@@ -58,10 +58,10 @@ def show_article(request,article_id):
             newcomment.email_address = add_comment.cleaned_data['email_address']
             newcomment.writeup = add_comment.cleaned_data['writeup']
             newcomment.save()
-            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)),'add_comment_form':Add_Comment()})
+            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'add_comment_form':Add_Comment()})
     else:
         add_comment = Add_Comment()
-    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)),'add_comment_form':add_comment})
+    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'add_comment_form':add_comment})
 
 """
 def hello():
@@ -75,11 +75,11 @@ def test_stream(request):
 def category_list(request,category_label):
     category = get_object_or_404(Category,category_label=category_label)
     articles = Category.objects.get(category_label=category_label).article_set.filter(display=True)
-    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
 
 def my_articles_list(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
-    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
 
 def upload_image(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
@@ -90,12 +90,12 @@ def upload_image(request,username):
             if article in articles or User.objects.get(username=username) in User.objects.filter(is_staff=True):
                 newimage = article.image_set.create(caption = form.cleaned_data['caption'], img_file = form.cleaned_data['img_file'])
                 newimage.save()
-                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
             else:
-                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
     else:
         form = Image_Form()
-    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
 
 @login_required()
 def compose(request,username):
@@ -110,10 +110,10 @@ def compose(request,username):
             newarticle.pub_date = datetime.datetime.now()
             newarticle.display = False
             newarticle.save()
-            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
     else:
         form = Compose_Form()
-    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
 
 #manual way of adding comment
 """
@@ -153,7 +153,7 @@ def signature(request):
         """
         try:
             newsignature.save()
-            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def))})
+            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__'))})
         except:
             pass
         return render(request,'blog_t/signature.html')            
@@ -182,9 +182,9 @@ def chat_room(request, room_name):
 def cs_chat_monitor(request,username):
     return render(request,'blog_t/cs_chat_monitor.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'username':username})
 
-def cs_chat_room(request,room_name,username):
+def cs_chat_room(request,room_name,username,title):
     if bool(os.environ.get('CHAT_READY', cs_chat_ready_def)):
-        return render(request,'blog_t/cs_chat_room.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'username':username,'room_name_json': mark_safe(json.dumps(room_name))})
+        return render(request,'blog_t/cs_chat_room.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'username':username,'room_name_json': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
     else:
         raise Http404()
 
