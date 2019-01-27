@@ -227,6 +227,7 @@
         chatSocket.send(JSON.stringify({
             'action': 'ARL?'}));            //ARL = all room list
         requestingARL = true;
+        alert('username2 '+username)
     }
 
     function serveChat(unique_id,username,title){
