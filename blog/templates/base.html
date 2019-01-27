@@ -188,7 +188,7 @@
                 do {
                 unique_id = makeid();
                 } while (lst.includes(unique_id));
-                window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+username+'/Chat Room/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
+                window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+window.username+'/Chat Room/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
             }
         }
     };
@@ -218,7 +218,7 @@
         var initials = document.getElementById("initials").value;
         if (initials.trim()){
             closePopup();
-            username = '_'+initials;
+            window.username = '_'+initials;
             requestChat();}
         else{
             alert("Please enter first name/initials for chat id");}
