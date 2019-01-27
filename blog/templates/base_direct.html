@@ -63,7 +63,7 @@
                             <a href="#" onclick="openChatMonitor();return false;">Chat Monitor</a><br>
                             <a href="#" onclick="openServeChat();return false;">Serve Chat</a>
                         {% else %}
-                            <a href="#" onclick="requestChat();return false;">Chat</a>
+                            <a href="#" onclick="openChat();return false;">Chat</a>
                         {% endif %}                        
                     {% endif %}
                     <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
@@ -126,6 +126,10 @@
     var unique_id = '';
     var requestingRTS = false;
     var requestingARL = false;
+    /*
+    var client = false;
+    if (username){client = true};
+    */
 
     function openChatMonitor(){
         window.open(window.location.protocol+'//'+window.location.host+'/cs_chat_monitor/'+username+'/', "_blank") //, "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=200,width=400,height=400")
@@ -176,7 +180,7 @@
                 ul.appendChild(li);
             }            
             document.getElementById("room-lists").style.display = "block";
-        } else if (requestingARL && action=='ARL'){
+        } /*else if (requestingARL && action=='ARL'){
             var lst = JSON.parse(logs.replace(/'/g,'"'))
             requestingARL = false;
             if (lst[0] == 'zzz'){
@@ -185,25 +189,25 @@
                 do {
                 unique_id = makeid();
                 } while (lst.includes(unique_id));
-                if (username){
-                    enterChat();
-                } else {
-                    document.getElementById("myForm").style.display = "block";
-                    document.getElementById("initials").focus();
-                    document.getElementById("initials").onkeyup = function(e) {
-                        if (e.keyCode === 13) {  // enter, return
-                            document.getElementById("submitInitials_btn").click();
-                            enterChat();
-                        }
-                    };
-                }
+                enterChat();                
             }
-        }
+        }*/
     };
 
     function openChat(){
+        if (username){
+            requestChat();
+            }
+        else {
+            document.getElementById("myForm").style.display = "block";
+            document.getElementById("initials").focus();
+            document.getElementById("initials").onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.getElementById("submitInitials_btn").click();
+                }
+            };
+            }
         }
-
     function closePopup(){
         document.getElementById("myForm").style.display = "none";
     }
@@ -211,13 +215,12 @@
     function closeRoomList() {
         document.getElementById("room-lists").style.display = "none";
     }
-    
     function submitInitials(){
         var initials = document.getElementById("initials").value;
         if (initials.trim()){
             closePopup();
             window.username = '_'+initials;
-            }
+            requestChat();}
         else{
             alert("Please enter first name/initials for chat id");}
             document.getElementById("initials").value = "";
@@ -227,10 +230,15 @@
         window.open(window.location.protocol+'//'+window.location.host+'/cs_chat/'+unique_id+'/'+window.username+'/Chat Room/', "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=520,left=500,width=590,height=370")
     }
 
-    function requestChat(){
+    function requestChat(){           //(username)
+        /*
         chatSocket.send(JSON.stringify({
             'action': 'ARL?'}));            //ARL = all room list
         requestingARL = true;
+        if (!client){alert('Please allow pop up for chat window')}
+        */
+        unique_id = makeid();
+        enterChat();
     }
 
     function serveChat(unique_id,username,title){
