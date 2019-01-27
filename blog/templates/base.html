@@ -217,7 +217,6 @@
         if (initials.trim()){
             closePopup();
             window.username = '_'+initials;
-            alert('username1 '+username)
             requestChat();}
         else{
             alert("Please enter first name/initials for chat id");}
@@ -228,7 +227,6 @@
         chatSocket.send(JSON.stringify({
             'action': 'ARL?'}));            //ARL = all room list
         requestingARL = true;
-        alert('username2 '+username)
     }
 
     function serveChat(unique_id,username,title){
