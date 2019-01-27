@@ -179,7 +179,6 @@
         } else if (requestingARL && action=='ARL'){
             var lst = JSON.parse(logs.replace(/'/g,'"'))
             requestingARL = false;
-            alert('username3 '+username)
             if (lst[0] == 'zzz'){
                 alert('There is currently no staff available. Please return on office hour or drop us an email')
             } else {
@@ -217,6 +216,7 @@
         if (initials.trim()){
             closePopup();
             window.username = '_'+initials;
+            alert('username1 '+username)
             requestChat();}
         else{
             alert("Please enter first name/initials for chat id");}
