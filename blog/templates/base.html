@@ -193,7 +193,6 @@
                     document.getElementById("initials").onkeyup = function(e) {
                         if (e.keyCode === 13) {  // enter, return
                             document.getElementById("submitInitials_btn").click();
-                            enterChat();
                         }
                     };
                 }
@@ -211,12 +210,13 @@
     function closeRoomList() {
         document.getElementById("room-lists").style.display = "none";
     }
-    
+
     function submitInitials(){
         var initials = document.getElementById("initials").value;
         if (initials.trim()){
             closePopup();
             window.username = '_'+initials;
+            enterChat();
             }
         else{
             alert("Please enter first name/initials for chat id");}
