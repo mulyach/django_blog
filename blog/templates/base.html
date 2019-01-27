@@ -215,7 +215,7 @@
         var initials = document.getElementById("initials").value;
         if (initials.trim()){
             closePopup();
-            username = '_'+initials;
+            window.username = '_'+initials;
             requestChat();}
         else{
             alert("Please enter first name/initials for chat id");}
