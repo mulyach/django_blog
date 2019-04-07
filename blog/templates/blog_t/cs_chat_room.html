@@ -7,7 +7,7 @@
     #chat-box {
       margin:0 auto;
       z-index: 1000;
-      width: 550px;
+      width: 480px;
     }
     </style>
     <title>{{ title }}</title>
@@ -15,9 +15,7 @@
 <body>
     <div id="chat-box">
         <textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>
-        <!--<textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>-->
-        <input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>
-        <!--<input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>-->
+        <input id="chat-message-input" placeholder="Type your chat here" type="text" size="65"><br/>
         <input id="chat-message-submit" type="button" value="Send"/>
         <input type="text" value={{username}} id="username" style="display:none;">
         <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
