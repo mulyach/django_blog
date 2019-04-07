@@ -6,7 +6,6 @@
     #chat-box {
       margin:0 auto;
       z-index: 1000;
-      width: max-width;
       overflow: hidden;
       display: -webkit-box;
       display: -webkit-flex;
@@ -19,23 +18,24 @@
       -webkit-box-direction: normal;
       -webkit-flex-direction: column;
           -ms-flex-direction: column;
-              flex-direction: column;    
+              flex-direction: column;
+    }
     #chat-log {
-        font-size: 14px;
         -webkit-box-sizing: border-box;
            -moz-box-sizing: border-box;
                 box-sizing: border-box;    
     }
-    #chat-message-input {
-        font-size: 14px;
-    }
+    @media screen and (max-width: 500px){
+        .chat-box{
+            width: 200px;
+        }
     }
     </style>
     <title>{{ title }}</title>
 </head>
 <body>
     <div id="chat-box">
-        <textarea id="chat-log" cols="60" rows="20" disabled></textarea><br/>
+        <textarea id="chat-log" rows="20" disabled></textarea><br/>
         <!--<textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>-->
         <input id="chat-message-input" placeholder="Type your chat here" type="text"><br/>
         <!--<input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>-->
