@@ -1,30 +1,17 @@
 <!DOCTYPE html target="_blank">
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style type="text/css">
-    #chat-box {
-      margin:0 auto;
-      z-index: 1000;
-    }
-    </style>
+    <meta charset="utf-8"/>
     <title>{{ title }}</title>
 </head>
 <body>
-    <div id="chat-box">
-        <textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>
-        <!--<textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>-->
-        <input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>
-        <!--<input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>-->
-        <input id="chat-message-submit" type="button" value="Send"/>
-        <input type="text" value={{username}} id="username" style="display:none;">
-        <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
-        <div id="wd-info"></div>
-    </div>
+    <textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>
+    <input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>
+    <input id="chat-message-submit" type="button" value="Send"/>
+    <input type="text" value={{username}} id="username" style="display:none;">
+    <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
 </body>
 <script>
-    document.getElementById("wd-info").innerHTML = screen.width;
     window.onbeforeunload = function (e) {
         (e || window.event).returnValue = null;
         return null;
