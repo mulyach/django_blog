@@ -6,16 +6,33 @@
     <style type="text/css">
     #chat-box {
       margin:0 auto;
-      z-index: 1000;
-      width: 480px;
+      width: 550px;
     }
+    #chat-log,#chat-message-input {
+      margin:0 auto;
+      z-index: 1000;
+      overflow: hidden;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+          -ms-flex-pack: justify;
+              justify-content: space-between;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+          -ms-flex-direction: column;
+              flex-direction: column;
+    }
+
     </style>
     <title>{{ title }}</title>
 </head>
 <body>
     <div id="chat-box">
         <textarea id="chat-log" cols="80" rows="20" disabled></textarea><br/>
-        <input id="chat-message-input" placeholder="Type your chat here" type="text" size="65"><br/>
+        <input id="chat-message-input" placeholder="Type your chat here" type="text" size="56"><br/>
         <input id="chat-message-submit" type="button" value="Send"/>
         <input type="text" value={{username}} id="username" style="display:none;">
         <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
