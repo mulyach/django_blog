@@ -8,7 +8,7 @@
       margin:0 auto;
       width: calc(max-width - 10px);
     }
-    @media only screen and (min-width:900px) {
+    @media only screen and (min-width:600px) {
       #chat-box {
         width: 600px;
       }
@@ -37,7 +37,8 @@
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
     var cscRoom = document.getElementById("cscRoom").value;
-    var intro = '~Never reveal your password to our staff~'
+    var intro = ''
+    //var intro = '~Never reveal your password to our staff~\n'
 
     var cscSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
@@ -77,7 +78,7 @@
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
             'action': '>'+username}));
-        document.querySelector('#chat-log').value=intro+'\n';
+        document.querySelector('#chat-log').value=intro;
         cscSocket.send(JSON.stringify({
             'message': roomName+'|'+username}));
     };
