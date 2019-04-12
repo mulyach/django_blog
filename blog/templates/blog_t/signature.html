@@ -1,30 +1,28 @@
  <html>
 <head>
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body onload="init()">
-    <canvas id="can" width="350" height="340" style="border:2px solid;"></canvas>
-    <div style="top:6%;left:10%;">Choose Color</div>
-    <div style="top:9%;left:12%;width:10px;height:10px;background:green;" id="green" onclick="color(this)"></div>
-    <div style="top:9%;left:13%;width:10px;height:10px;background:blue;" id="blue" onclick="color(this)"></div>
-    <div style="top:9%;left:14%;width:10px;height:10px;background:red;" id="red" onclick="color(this)"></div>
-    <div style="top:11%;left:12%;width:10px;height:10px;background:yellow;" id="yellow" onclick="color(this)"></div>
-    <div style="top:11%;left:13%;width:10px;height:10px;background:orange;" id="orange" onclick="color(this)"></div>
-    <div style="top:11%;left:14%;width:10px;height:10px;background:black;" id="black" onclick="color(this)"></div>
-    <div style="top:14%;left:10%;">Eraser</div>
-    <div style="top:16%;left:12%;width:15px;height:15px;background:white;border:2px solid;" id="white" onclick="color(this)"></div>
-    <img id="canvasimg" style="display:none;">
-    <input type="button" value="Upload" id="btn" size="30" onclick="save()" style="top:80%;left:10%;">
-    <input type="button" value="Clear" id="clr" size="23" onclick="erase()" style="top:80%;left:18%;">
-
-    <form id="uploaderForm" action="{% url 'blog:signature' %}" enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        <input type="hidden" for="image_data" id="image_data" name="image_data">
-        <div style="top:75%;left:10%;">
-            Full name: <input type="text" name="signature_owner">
-        </div>
-        
-    </form>
+    <div id="can-frame" style="width: 100%; display: flex;
+  justify-content: center;">
+        <br>
+        <canvas id="can" width="300" height="250" style="border:2px solid;"></canvas>
+        <img id="canvasimg" style="display:none;">
+    </div>
+    <div style="width: 100%; display: flex; justify-content: center;">
+        <input type="button" value="Upload" id="btn" size="30" onclick="save()" style="top:80%;left:10%; cursor: pointer;">
+        <button style="opacity: 0; width: 50px"></button>
+        <input type="button" value="Clear" id="clr" size="30" onclick="erase()" style="top:80%;left:18%; cursor: pointer;">
+    </div>
+    <div style="width: 100%; display: flex; justify-content: center;">
+        <form id="uploaderForm" action="{% url 'blog:signature' %}" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <input type="hidden" for="image_data" id="image_data" name="image_data">
+            <div style="top:75%;left:10%;">
+                Full name: <input type="text" name="signature_owner">
+            </div>
+        </form>
+    </div>
 </body>
 
 <script type="text/javascript">
