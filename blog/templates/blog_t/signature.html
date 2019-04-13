@@ -56,7 +56,6 @@ function init() {
     }, false);
 
     canvas.addEventListener("touchmove", function (e) {
-        e.preventDefault();
         findxy('move', e.touches[0])
     }, false);
     canvas.addEventListener("touchstart", function(e) {
@@ -69,9 +68,6 @@ function init() {
     canvas.addEventListener("touchcancel", function (e) {
         findxy('out', e.touches[0])
     }, false);
-    canvas.ontouched = (e) => {
-        e.preventDefault();
-    }
 }
 
 function color(obj) {
