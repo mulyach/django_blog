@@ -47,7 +47,7 @@
         '/ws/chat/' + roomName + '/');
 
     var oldTitle = document.title;
-    var msg = "New!";
+    var titleAlert = "New!";
     var timeoutId;
 
     function checkPageFocus() {
@@ -62,8 +62,11 @@
         timeoutId = null;
     };
 
-    newExcitingAlerts = (function () {
-        var blink = function() { document.title = document.title == msg ? ' ' : msg; };
+    newExcitingAlerts = (function (message) {
+        if (isMobileBrowser()){
+            alert(message);
+        }
+        var blink = function() { document.title = document.title == titleAlert ? ' ' : titleAlert; };
         return function () {
             if (!timeoutId) {
                 timeoutId = setInterval(blink, 1000);
@@ -72,6 +75,14 @@
     }());
 
     setInterval(checkPageFocus, 300);
+
+    function isMobileBrowser() { 
+        if (navigator['userAgent']['match'](/Android/i) || navigator['userAgent']['match'](/iPhone/i) || navigator['userAgent']['match'](/iPad/i) || navigator['userAgent']['match'](/iPod/i) || navigator['userAgent']['match'](/BlackBerry/i) || navigator['userAgent']['match'](/Windows Phone/i)) { 
+            return true 
+        } else { 
+            return false 
+        } 
+    } 
 
     chatSocket.onopen = function(e) {
         chatSocket.send(JSON.stringify({
@@ -97,7 +108,7 @@
         else if (message){
             document.querySelector('#chat-log').value += (message + '\n');}
         document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
-        newExcitingAlerts();        
+        newExcitingAlerts(message);        
     };
 
     chatSocket.onclose = function(e) {

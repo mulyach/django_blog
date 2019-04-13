@@ -19,7 +19,7 @@
             {% csrf_token %}
             <input type="hidden" for="image_data" id="image_data" name="image_data">
             <div style="top:75%;left:10%;">
-                Full name: <input type="text" name="signature_owner">
+                Full name: <input type="text" name="signature_owner" size="25">
             </div>
         </form>
     </div>
@@ -59,7 +59,7 @@ function init() {
         findxy('move', e.touches[0])
     }, false);
     canvas.addEventListener("touchstart", function(e) {
-        e.preventDefault();
+        e.preventDefault();                                 //to prevent scrolling during signing
         findxy('down', e.touches[0])
     }, false);
     canvas.addEventListener("touchend", function (e) {
