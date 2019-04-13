@@ -67,6 +67,9 @@ function init() {
     canvas.addEventListener("touchcancel", function (e) {
         findxy('out', e.touches[0])
     }, false);
+    canvas.ontouched = (e) => {
+        e.preventDefault();
+    }
 }
 
 function color(obj) {
