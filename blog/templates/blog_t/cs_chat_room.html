@@ -97,18 +97,22 @@
 
         if (action.indexOf('>')==0 && action != '>'+username){
             chatSocket.send(JSON.stringify({
-                'logs': document.querySelector('#chat-log').value}));}
+                'logs': document.querySelector('#chat-log').value}));
+        }
         else if (action && action.indexOf('<')==0 && username.indexOf('$')==0){
-            document.querySelector('#chat-log').value += (action.slice(2) + ' has left\n');}
+            document.querySelector('#chat-log').value += (action.slice(2) + ' has left\n');
+        }
         else if (prev_logs){
-            document.querySelector('#chat-log').value = (prev_logs);}
+            document.querySelector('#chat-log').value = (prev_logs);
+        }
         else if (message){
-            document.querySelector('#chat-log').value += (message + '\n');}
+            document.querySelector('#chat-log').value += (message + '\n');
+            if (isMobileBrowser() && !(document.hasFocus())){
+                alert(message);
+            };
+            newExcitingAlerts();
+        }
         document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
-        if (isMobileBrowser()){
-            alert(message);
-        }        
-        newExcitingAlerts();
     };
 
     chatSocket.onclose = function(e) {
