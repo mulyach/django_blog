@@ -62,10 +62,7 @@
         timeoutId = null;
     };
 
-    newExcitingAlerts = (function (message) {
-        if (isMobileBrowser()){
-            alert(message);
-        }
+    newExcitingAlerts = (function () {
         var blink = function() { document.title = document.title == titleAlert ? ' ' : titleAlert; };
         return function () {
             if (!timeoutId) {
@@ -108,7 +105,10 @@
         else if (message){
             document.querySelector('#chat-log').value += (message + '\n');}
         document.getElementById("chat-log").scrollTop = document.getElementById("chat-log").scrollHeight;
-        newExcitingAlerts(message);        
+        if (isMobileBrowser()){
+            alert(message);
+        }        
+        newExcitingAlerts();
     };
 
     chatSocket.onclose = function(e) {
