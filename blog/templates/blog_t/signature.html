@@ -56,9 +56,11 @@ function init() {
     }, false);
 
     canvas.addEventListener("touchmove", function (e) {
+        e.preventDefault();
         findxy('move', e.touches[0])
     }, false);
     canvas.addEventListener("touchstart", function(e) {
+        e.preventDefault();
         findxy('down', e.touches[0])
     }, false);
     canvas.addEventListener("touchend", function (e) {
