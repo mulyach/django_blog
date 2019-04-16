@@ -111,4 +111,4 @@ venv.bak/
 
 # Off server files
 XS*.*
-XS_CS_chat_logs/*.*
+XS_CS_chat_logs
