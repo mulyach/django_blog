@@ -172,7 +172,7 @@
 
     chatSocket.onmessage = function(e) {
         alert(e.data);
-        var data = JSON.parse(decrypt(e.data), chat_key, chat_iv);
+        var data = JSON.parse(decrypt(e.data, chat_key, chat_iv));
         var action = data['action'];
         var logs = data['logs'];
         //alert('action: '+action+'; logs: '+logs+'; requestingARL: '+requestingARL)
