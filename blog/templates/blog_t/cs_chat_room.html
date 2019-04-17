@@ -124,13 +124,9 @@
     } 
 
     chatSocket.onopen = function(e) {
-        confirm(encrypt(JSON.stringify({
-            'action': '>'+username}), chat_key, chat_iv));
         chatSocket.send(encrypt(JSON.stringify({
             'action': '>'+username}), chat_key, chat_iv));
         document.querySelector('#chat-log').value=intro;
-        confirm(encrypt(JSON.stringify({
-            'message': roomName+'|'+username}), chat_key, chat_iv))
         cscSocket.send(encrypt(JSON.stringify({
             'message': roomName+'|'+username}), chat_key, chat_iv));
     };
