@@ -1,7 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json,os
 from .enc_dec import encrypt,decrypt
-#same temp vars are in views.py and XS_CS_chat_master.py
+#same temp vars are in: views.py, XS_CS_chat_master.py, XS_OTP_chat_master.py
 temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
 temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
 #------

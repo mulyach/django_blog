@@ -21,10 +21,13 @@ from .consumers import ChatConsumer
 import websocket,time
 max_attempt = 2
 cs_chat_ready_def = True
-#same temp vars are in consumers.py and XC_CS_chat_master.py
+from .enc_dec import encrypt,decrypt
+#same temp vars are in: consumers.py, XC_CS_chat_master.py, XS_OTP_chat_master.py
 temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
 temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
 #------
+chat_key = os.environ.get('CHAT_KEY', temp_CHAT_KEY)
+chat_iv = os.environ.get('CHAT_IV', temp_CHAT_IV)
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -32,7 +35,8 @@ def index(request):
     ct.counts += 1
     ct.save()
     latest_article_list = Article.objects.filter(display=True,contributor_author=None).order_by('-pub_date')[:20]
-    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)),'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)}
+    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)),'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'chat_key':chat_key,'chat_iv':chat_iv}
+
     return render(request,'blog_t/index.html',context)
 
 def show_article(request,article_id):
@@ -55,19 +59,19 @@ def show_article(request,article_id):
             newcomment.email_address = add_comment.cleaned_data['email_address']
             newcomment.writeup = add_comment.cleaned_data['writeup']
             newcomment.save()
-            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV),'add_comment_form':Add_Comment()})
+            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv,'add_comment_form':Add_Comment()})
     else:
         add_comment = Add_Comment()
-    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV),'add_comment_form':add_comment})
+    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv,'add_comment_form':add_comment})
 
 def category_list(request,category_label):
     category = get_object_or_404(Category,category_label=category_label)
     articles = Category.objects.get(category_label=category_label).article_set.filter(display=True)
-    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
 
 def my_articles_list(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
-    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
 
 def upload_image(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
@@ -78,12 +82,12 @@ def upload_image(request,username):
             if article in articles or User.objects.get(username=username) in User.objects.filter(is_staff=True):
                 newimage = article.image_set.create(caption = form.cleaned_data['caption'], img_file = form.cleaned_data['img_file'])
                 newimage.save()
-                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
             else:
-                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
     else:
         form = Image_Form()
-    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
 
 @login_required()
 def compose(request,username):
@@ -98,10 +102,10 @@ def compose(request,username):
             newarticle.pub_date = datetime.datetime.now()
             newarticle.display = False
             newarticle.save()
-            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
     else:
         form = Compose_Form()
-    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
 
 #manual way of adding comment
 """
@@ -141,7 +145,7 @@ def signature(request):
         """
         try:
             newsignature.save()
-            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'chat_ready':bool(os.environ.get('CHAT_READY', cs_chat_ready_def)), 'cscRoom':mark_safe(os.environ.get)('CSC_PATH', '__csc__'),'chat_key':chat_key,'chat_iv':chat_iv})
         except:
             pass
         return render(request,'blog_t/signature.html')            
@@ -159,7 +163,7 @@ def chat_lobby(request):
 
 def chat_room(request, room_name):
     t = get_template('blog_t/chat_room.html')
-    html = t.render({'room_name_json': mark_safe(json.dumps(room_name)),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
+    html = t.render({'room_name_json': mark_safe(json.dumps(room_name)),'chat_key':chat_key,'chat_iv':chat_iv})
     return HttpResponse(html)    
     """ #cs_chat is better to launch from base.html using javascript
     scrp = '<script>window.open("https://lkestories.herokuapp.com/chat/'+room_name+'/", "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=750,height=400")</script>'
@@ -168,11 +172,11 @@ def chat_room(request, room_name):
 
 @staff_member_required()
 def cs_chat_monitor(request,username):
-    return render(request,'blog_t/cs_chat_monitor.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV),'username':username})
+    return render(request,'blog_t/cs_chat_monitor.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'chat_key':chat_key,'chat_iv':chat_iv,'username':username})
 
 def cs_chat_room(request,room_name,username,title):
     if bool(os.environ.get('CHAT_READY', cs_chat_ready_def)):
-        return render(request,'blog_t/cs_chat_room.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV),'username':username,'room_name_json': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
+        return render(request,'blog_t/cs_chat_room.html',{'cscRoom':mark_safe(os.environ.get('CSC_PATH', '__csc__')),'chat_key':chat_key,'chat_iv':chat_iv,'username':username,'room_name_json': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
     else:
         raise Http404()
 
@@ -202,7 +206,7 @@ def sendWSchat(request,message):
     connectWSchat(request,os.environ.get('MPATH', '__utama__'))
     while lanjut:
         try:
-            utama_ws.send(json.dumps({'message':message}))
+            utama_ws.send(encrypt(json.dumps({'message':message}), chat_key,chat_iv))
             sent_list.append(message)
             lanjut = False
         except (ConnectionResetError,BrokenPipeError):
@@ -220,7 +224,7 @@ def send_OTP(request,message):
     while result!='S' and attempt<=max_attempt:
         while lanjut:
             try:
-                result = json.loads(utama_ws.recv())['message']
+                result = json.loads(decrypt(utama_ws.recv(), chat_key,chat_iv))['message']
             except (ConnectionResetError,BrokenPipeError):
                 print('RECONNECTING')
                 connectWSchat(request,os.environ.get('MPATH', '__utama__'))
@@ -243,7 +247,7 @@ def enter_OTP(request,mobileno,message):
     while result not in ['Y','N'] and attempt<=max_attempt:
         while lanjut:
             try:
-                result = json.loads(utama_ws.recv())['message']
+                result = json.loads(decrypt(utama_ws.recv(), chat_key,chat_iv))['message']
             except (ConnectionResetError,BrokenPipeError):
                 print('RECONNECTING')
                 connectWSchat(request,os.environ.get('MPATH', '__utama__'))
