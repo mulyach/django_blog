@@ -15,6 +15,36 @@
     }
     </style>
     <title>{{ title }}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/mode-cfb.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/pad-zeropadding.js"></script>
+    <script>
+        function preproc(key,iv) {
+            var ukey = CryptoJS.enc.Utf8.parse(key);
+            var options = { iv: CryptoJS.enc.Utf8.parse(iv), mode:CryptoJS.mode.CFB, padding:CryptoJS.pad.ZeroPadding};
+            var obj = {
+                ukey: ukey,
+                options: options
+            }
+            return obj;
+        }
+
+        function encrypt(plain_text,key,iv) {
+            var attr = preproc(key,iv);
+            var encrypted = CryptoJS.AES.encrypt(plain_text, attr.ukey, attr.options);
+            var e64 = CryptoJS.enc.Base64.parse(encrypted.toString());
+            var encrypted = e64.toString(CryptoJS.enc.Hex);
+            return encrypted;
+        }
+
+        function decrypt(encrypted_text,key,iv) {
+            var attr = preproc(key,iv);
+            var reb64 = CryptoJS.enc.Hex.parse(encrypted_text);
+            var bytes = reb64.toString(CryptoJS.enc.Base64);
+            var decrypted = CryptoJS.AES.decrypt(bytes, attr.ukey, attr.options);
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        }    
+    </script>    
 </head>
 <body>
     <div id="chat-box">
@@ -23,6 +53,8 @@
         <input id="chat-message-submit" type="button" value="Send"/>
         <input type="text" value={{username}} id="username" style="display:none;">
         <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
+        <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
+        <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
     </div>
 </body>
 <script>
@@ -35,6 +67,8 @@
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
     var cscRoom = document.getElementById("cscRoom").value;
+    var chat_key = document.getElementById("chat_key").value;
+    var chat_iv = document.getElementById("chat_iv").value;
     var intro = ''
     //var intro = '~Never reveal your password to our staff~\n'
 
@@ -90,22 +124,22 @@
     } 
 
     chatSocket.onopen = function(e) {
-        chatSocket.send(JSON.stringify({
-            'action': '>'+username}));
+        chatSocket.send(encrypt(JSON.stringify({
+            'action': '>'+username})), chat_key, chat_iv);
         document.querySelector('#chat-log').value=intro;
-        cscSocket.send(JSON.stringify({
-            'message': roomName+'|'+username}));
+        cscSocket.send(encrypt(JSON.stringify({
+            'message': roomName+'|'+username})), chat_key, chat_iv);
     };
 
     chatSocket.onmessage = function(e) {
-        var data = JSON.parse(e.data);
+        var data = JSON.parse(decrypt(e.data, chat_key, chat_iv));
         var message = data['message'];
         var action = data['action'];
         var prev_logs = data['logs'];
 
         if (action.indexOf('>')==0 && action != '>'+username){
-            chatSocket.send(JSON.stringify({
-                'logs': document.querySelector('#chat-log').value}));
+            chatSocket.send(encrypt(JSON.stringify({
+                'logs': document.querySelector('#chat-log').value})), chat_key, chat_iv);
         }
         else if (action && action.indexOf('<')==0 && username.indexOf('$')==0){
             document.querySelector('#chat-log').value += (action.slice(2) + ' has left\n');
@@ -144,21 +178,20 @@
         var messageInputDom = document.querySelector('#chat-message-input');
         if (messageInputDom.value.trim()){
             var message = '<'+username.substr(1)+'> '+messageInputDom.value;
-            chatSocket.send(JSON.stringify({
+            chatSocket.send(encrypt(JSON.stringify({
                 'message': message
-            }));
+            })), chat_key, chat_iv);
             messageInputDom.value = '';
         }
     };
 
     window.onunload = function (e) {
-        cscSocket.send(JSON.stringify({
-            'message': roomName+'!'+username, 'logs':document.querySelector('#chat-log').value}));
-        chatSocket.send(JSON.stringify({
-            'action': '<'+username}));
+        cscSocket.send(encrypt(JSON.stringify({
+            'message': roomName+'!'+username, 'logs':document.querySelector('#chat-log').value})), chat_key, chat_iv);
+        chatSocket.send(encrypt(JSON.stringify({
+            'action': '<'+username})), chat_key, chat_iv);
         (e || window.event).returnValue = null;
         return null;
     };
-
 </script>
 </html>
