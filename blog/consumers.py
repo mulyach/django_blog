@@ -69,7 +69,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         action = event['action']
         logs = event['logs']
 
-        await self.send(encrypt(text_data=json.dumps({
+        await self.send(text_data=encrypt(json.dumps({
             'message': message,
             'action': action,
             'logs': logs,            
