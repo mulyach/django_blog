@@ -19,8 +19,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/mode-cfb.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/pad-zeropadding.js"></script>
-    <script src="{% static 'enc_dec.js' %}">
-        /*
+    <script >
+        /*src="{% static 'enc_dec.js' %}"
         function preproc(key,iv) {
             var ukey = CryptoJS.enc.Utf8.parse(key);
             var options = { iv: CryptoJS.enc.Utf8.parse(iv), mode:CryptoJS.mode.CFB, padding:CryptoJS.pad.ZeroPadding};
