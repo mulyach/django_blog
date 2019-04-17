@@ -21,8 +21,10 @@ from .consumers import ChatConsumer
 import websocket,time
 max_attempt = 2
 cs_chat_ready_def = True
+#same temp vars are in consumers.py
 temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
 temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
+#------
 
 def index(request):
     todaytag = str(datetime.date.today())
