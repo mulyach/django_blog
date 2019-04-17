@@ -5,7 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/mode-cfb.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/pad-zeropadding.js"></script>
+    <script src="blog_t/enc_dec.js"></script>
 </head>
 <style>
 /* The popup form - hidden by default */
@@ -67,6 +70,8 @@
                         {% endif %}                        
                     {% endif %}
                     <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
+                    {{chat_key}}
+                    {{chat_iv}}
                 </ul>
                 <ul class = "sidebar-nav">
                     {% if categories %}<strong>Categories</strong>
