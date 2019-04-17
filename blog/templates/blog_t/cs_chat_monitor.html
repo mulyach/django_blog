@@ -87,7 +87,7 @@
 
     chatSocket.onopen = function(e) {
         chatSocket.send(encrypt(JSON.stringify({
-            'action': '>'+username})), chat_key, chat_iv);
+            'action': '>'+username}), chat_key, chat_iv));
         justjoined = true;
     };
 
@@ -121,7 +121,7 @@
 
     window.onunload = function (e) {
         chatSocket.send(encrypt(JSON.stringify({
-            'action': '<'+username})), chat_key, chat_iv);
+            'action': '<'+username}), chat_key, chat_iv));
         (e || window.event).returnValue = null;
         return null;
     };
