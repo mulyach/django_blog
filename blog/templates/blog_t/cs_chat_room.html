@@ -125,10 +125,10 @@
 
     chatSocket.onopen = function(e) {
         chatSocket.send(encrypt(JSON.stringify({
-            'action': '>'+username})), chat_key, chat_iv);
+            'action': '>'+username}), chat_key, chat_iv));
         document.querySelector('#chat-log').value=intro;
         cscSocket.send(encrypt(JSON.stringify({
-            'message': roomName+'|'+username})), chat_key, chat_iv);
+            'message': roomName+'|'+username}), chat_key, chat_iv));
     };
 
     chatSocket.onmessage = function(e) {
@@ -139,7 +139,7 @@
 
         if (action.indexOf('>')==0 && action != '>'+username){
             chatSocket.send(encrypt(JSON.stringify({
-                'logs': document.querySelector('#chat-log').value})), chat_key, chat_iv);
+                'logs': document.querySelector('#chat-log').value}), chat_key, chat_iv));
         }
         else if (action && action.indexOf('<')==0 && username.indexOf('$')==0){
             document.querySelector('#chat-log').value += (action.slice(2) + ' has left\n');
@@ -180,16 +180,16 @@
             var message = '<'+username.substr(1)+'> '+messageInputDom.value;
             chatSocket.send(encrypt(JSON.stringify({
                 'message': message
-            })), chat_key, chat_iv);
+            }), chat_key, chat_iv));
             messageInputDom.value = '';
         }
     };
 
     window.onunload = function (e) {
         cscSocket.send(encrypt(JSON.stringify({
-            'message': roomName+'!'+username, 'logs':document.querySelector('#chat-log').value})), chat_key, chat_iv);
+            'message': roomName+'!'+username, 'logs':document.querySelector('#chat-log').value}), chat_key, chat_iv));
         chatSocket.send(encrypt(JSON.stringify({
-            'action': '<'+username})), chat_key, chat_iv);
+            'action': '<'+username}), chat_key, chat_iv));
         (e || window.event).returnValue = null;
         return null;
     };
