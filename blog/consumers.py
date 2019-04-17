@@ -1,7 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-import json,os,sys #, base64
+import json,os #, base64
 #from Cryptodome.Cipher import AES
-from enc_dec import encrypt,decrypt
+from .enc_dec import encrypt,decrypt
 temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
 temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
 chat_key=os.environ.get('CHAT_KEY', temp_CHAT_KEY)
