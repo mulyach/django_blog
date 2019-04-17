@@ -70,8 +70,8 @@
                         {% endif %}                        
                     {% endif %}
                     <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
-                    {{chat_key}}
-                    {{chat_iv}}
+                    <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
+                    <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
                 </ul>
                 <ul class = "sidebar-nav">
                     {% if categories %}<strong>Categories</strong>
@@ -128,6 +128,8 @@
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
     var username = document.getElementById("username").value;
+    var chat_key = document.getElementById("chat_key").value;
+    var chat_iv = document.getElementById("chat_iv").value;
     var unique_id = '';
     var requestingRTS = false;
     var requestingARL = false;
