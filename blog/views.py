@@ -159,7 +159,7 @@ def chat_lobby(request):
 
 def chat_room(request, room_name):
     t = get_template('blog_t/chat_room.html')
-    html = t.render({'room_name_json': mark_safe(json.dumps(room_name))})
+    html = t.render({'room_name_json': mark_safe(json.dumps(room_name)),'chat_key':os.environ.get('CHAT_KEY', temp_CHAT_KEY),'chat_iv':os.environ.get('CHAT_IV', temp_CHAT_IV)})
     return HttpResponse(html)    
     """ #cs_chat is better to launch from base.html using javascript
     scrp = '<script>window.open("https://lkestories.herokuapp.com/chat/'+room_name+'/", "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=750,height=400")</script>'
