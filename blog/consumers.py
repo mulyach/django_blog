@@ -1,6 +1,13 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-import json #, os, base64
+import json,os,sys #, base64
 #from Cryptodome.Cipher import AES
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path: sys.path.append(BASE_DIR)
+from XS_enc_dec import encrypt,decrypt
+temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
+temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
+chat_key=os.environ.get('CHAT_KEY', temp_CHAT_KEY)
+chat_iv=os.environ.get('CHAT_IV', temp_CHAT_IV)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     """
@@ -40,7 +47,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     ##receive message from WebSocket
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+        text_data_json = json.loads(decrypt(text_data),chat_key,chat_iv)
         message = text_data_json.get('message','')
         action = text_data_json.get('action','')
         logs = text_data_json.get('logs','')
@@ -63,11 +70,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         action = event['action']
         logs = event['logs']
 
-        await self.send(text_data=json.dumps({
+        await self.send(encrypt(text_data=json.dumps({
             'message': message,
             'action': action,
             'logs': logs,            
-        }))
+        })),chat_key,chat_iv)
 
     """
     async def send(self,text_data):
