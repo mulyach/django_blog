@@ -51,18 +51,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         action = text_data_json.get('action','')
         logs = text_data_json.get('logs','')
         #async_to_sync(self.channel_layer.group_send)
-        await self.channel_layer.group_send(
-            self.room_group_name,
+        await self.channel_layer.group_send(self.room_group_name,encrypt(json.dumps(
             {
                 'type': 'chat_message',
                 'message': message,
                 'action': action,
                 'logs': logs,
-            }
-            )
+            })
+            ),chat_key,chat_iv)
 
     ##receive message from room group
-    async def chat_message(self, event):
+    async def chat_message(self, encrypted_event):
+        event = json.loads(decrypt(encrypted_event))
         message = event['message']
         #print('message 2:',message)        
         #if message:message = self.decrypt(message)
