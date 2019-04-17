@@ -35,6 +35,7 @@
             return decrypted.toString(CryptoJS.enc.Utf8);
         }    
     </script>
+    {% load static %}
 </head>
 <style>
 /* The popup form - hidden by default */
@@ -98,6 +99,7 @@
                     <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
                     <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
                     <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
+                    <img src="{% static 'NN2.png' %}">
                 </ul>
                 <ul class = "sidebar-nav">
                     {% if categories %}<strong>Categories</strong>
