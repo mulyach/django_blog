@@ -171,6 +171,8 @@
     }
 
     chatSocket.onmessage = function(e) {
+        alert(e.data);
+        alert(e.data['emsg']);
         var data = JSON.parse(decrypt(e.data['emsg']), chat_key, chat_iv);
         var action = data['action'];
         var logs = data['logs'];
