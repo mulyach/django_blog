@@ -57,8 +57,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'action': action,
                 'logs': logs,
-            })
-            ),chat_key,chat_iv)
+            }),chat_key,chat_iv))
 
     ##receive message from room group
     async def chat_message(self, encrypted_event):
