@@ -3,6 +3,7 @@ import json,os,sys #, base64
 #from Cryptodome.Cipher import AES
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path: sys.path.append(BASE_DIR)
+print('BASE_DIR:', BASE_DIR)
 from XS_enc_dec import encrypt,decrypt
 temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
 temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
