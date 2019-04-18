@@ -32,7 +32,7 @@ chat_key = mark_safe(json.dumps(os.environ.get('CHAT_KEY', temp_CHAT_KEY)))
 chat_iv = mark_safe(json.dumps(os.environ.get('CHAT_IV', temp_CHAT_IV)))
 chat_ready = bool(os.environ.get('CHAT_READY', cs_chat_ready_def))
 room_cs_master = mark_safe(json.dumps(os.environ.get('ROOM_CS_MASTER', temp_ROOM_CS_MASTER)))
-room_main = os.environ.get('ROOM_MAIN', temp_ROOM_MAIN)
+room_main = mark_safe(os.environ.get('ROOM_MAIN', temp_ROOM_MAIN))
 
 def index(request):
     todaytag = str(datetime.date.today())
