@@ -11,10 +11,6 @@
 </head>
 <body>
     <textarea id="chat-log" cols="70" rows="42" disabled></textarea><br/> <!-- cols="52" rows="25" -->
-    <input type="text" value={{username}} id="username" style="display:none;">
-    <input type="text" value={{roomCSM}} id="roomCSM" style="display:none;">
-    <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
-    <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
 </body>
 <script>
     window.onbeforeunload = function (e) {
@@ -23,10 +19,10 @@
     };
 
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-    var username = document.getElementById("username").value;
-    var roomName = document.getElementById("roomCSM").value;
-    var chat_key = document.getElementById("chat_key").value;
-    var chat_iv = document.getElementById("chat_iv").value;    
+    var username = {{ username }};
+    var roomName = {{ roomCSM }};
+    var chat_key = {{ chat_key }};
+    var chat_iv = {{ chat_iv }};
     var justjoined = false;
 
     var chatSocket = new WebSocket(

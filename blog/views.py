@@ -172,7 +172,7 @@ def chat_lobby(request):
 
 def chat_room(request, room_name):
     t = get_template('blog_t/chat_room.html')
-    html = t.render({'room_name': mark_safe(json.dumps(room_name)),'chat_key':json.dumps(chat_key),'chat_iv':json.dumps(chat_iv)})
+    html = t.render({'room_name': mark_safe(json.dumps(room_name)),'chat_key':mark_safe(json.dumps(chat_key)),'chat_iv':mark_safe(json.dumps(chat_iv))})
     return HttpResponse(html)    
     """ #cs_chat is better to launch from base.html using javascript
     scrp = '<script>window.open("https://lkestories.herokuapp.com/chat/'+room_name+'/", "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=750,height=400")</script>'
@@ -181,7 +181,7 @@ def chat_room(request, room_name):
 
 @staff_member_required()
 def cs_chat_monitor(request,username):
-    return render(request,'blog_t/cs_chat_monitor.html',{'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'username':username})
+    return render(request,'blog_t/cs_chat_monitor.html',{'roomCSM':mark_safe(json.dumps(room_cs_master)),'chat_key':mark_safe(json.dumps(chat_key)),'chat_iv':mark_safe(json.dumps(chat_iv)),'username':mark_safe(json.dumps(username))})
 
 def cs_chat_room(request,room_name,username,title):
     if chat_ready:
