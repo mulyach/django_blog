@@ -70,9 +70,6 @@
                             <a href="#" onclick="requestChat();return false;">Chat</a>
                         {% endif %}                        
                     {% endif %}
-                    <input type="text" value={{roomCSM}} id="roomCSM" style="display:none;">
-                    <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
-                    <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
                 </ul>
                 <ul class = "sidebar-nav">
                     {% if categories %}<strong>Categories</strong>
@@ -124,13 +121,13 @@
 </body>
 <script>
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-    var roomName = document.getElementById("roomCSM").value;
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
     var username = document.getElementById("username").value;
-    var chat_key = document.getElementById("chat_key").value;
-    var chat_iv = document.getElementById("chat_iv").value;
+    var roomName = {{ roomCSM }};
+    var chat_key = {{ chat_key }} ;
+    var chat_iv = {{ chat_iv }} ;
     var unique_id = '';
     var requestingRTS = false;
     var requestingARL = false;
