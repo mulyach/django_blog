@@ -121,13 +121,13 @@
 </body>
 <script>
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+    var roomName = {{ roomCSM }};
+    var chat_key = {{ chat_key }};
+    var chat_iv = {{ chat_iv }} ;
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
     var username = document.getElementById("username").value;
-    var roomName = {{ roomCSM }};
-    var chat_key = {{ chat_key }} ;
-    var chat_iv = {{ chat_iv }} ;
     var unique_id = '';
     var requestingRTS = false;
     var requestingARL = false;

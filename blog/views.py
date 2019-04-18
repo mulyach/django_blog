@@ -181,11 +181,11 @@ def chat_room(request, room_name):
 
 @staff_member_required()
 def cs_chat_monitor(request,username):
-    return render(request,'blog_t/cs_chat_monitor.html',{'roomCSM':mark_safe(json.dumps(room_cs_master)),'chat_key':mark_safe(json.dumps(chat_key)),'chat_iv':mark_safe(json.dumps(chat_iv)),'username':mark_safe(json.dumps(username))})
+    return render(request,'blog_t/cs_chat_monitor.html',{'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'username':mark_safe(json.dumps(username))})
 
 def cs_chat_room(request,room_name,username,title):
     if chat_ready:
-        return render(request,'blog_t/cs_chat_room.html',{'roomCSM':mark_safe(json.dumps(room_cs_master)),'chat_key':mark_safe(json.dumps(chat_key)),'chat_iv':mark_safe(json.dumps(chat_iv)),'username':mark_safe(json.dumps(username)),'room_name': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
+        return render(request,'blog_t/cs_chat_room.html',{'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'username':mark_safe(json.dumps(username)),'room_name': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
     else:
         raise Http404()
 
