@@ -172,7 +172,7 @@ def chat_lobby(request):
 
 def chat_room(request, room_name):
     t = get_template('blog_t/chat_room.html')
-    html = t.render({'room_name_json': mark_safe(json.dumps(room_name)),'chat_key':chat_key,'chat_iv':chat_iv})
+    html = t.render({'room_name': mark_safe(json.dumps(room_name)),'chat_key':json.dumps(chat_key),'chat_iv':json.dumps(chat_iv)})
     return HttpResponse(html)    
     """ #cs_chat is better to launch from base.html using javascript
     scrp = '<script>window.open("https://lkestories.herokuapp.com/chat/'+room_name+'/", "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=750,height=400")</script>'
@@ -185,7 +185,7 @@ def cs_chat_monitor(request,username):
 
 def cs_chat_room(request,room_name,username,title):
     if chat_ready:
-        return render(request,'blog_t/cs_chat_room.html',{'roomCSM':mark_safe(room_cs_master),'chat_key':mark_safe(chat_key),'chat_iv':mark_safe(chat_iv),'username':mark_safe(username),'room_name_json': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
+        return render(request,'blog_t/cs_chat_room.html',{'roomCSM':mark_safe(json.dumps(room_cs_master)),'chat_key':mark_safe(json.dumps(chat_key)),'chat_iv':mark_safe(json.dumps(chat_iv)),'username':mark_safe(json.dumps(username)),'room_name': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
     else:
         raise Http404()
 

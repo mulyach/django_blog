@@ -18,9 +18,9 @@
     <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
 </body>
 <script>
-    var roomName = {{ room_name_json }};
-    var chat_key = document.getElementById("chat_key").value;
-    var chat_iv = document.getElementById("chat_iv").value;
+    var roomName = {{ room_name }};
+    var chat_key = {{ chat_key }} //document.getElementById("chat_key").value;
+    var chat_iv = {{ chat_iv }} //document.getElementById("chat_iv").value;
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 
     var chatSocket = new WebSocket(
