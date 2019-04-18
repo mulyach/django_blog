@@ -38,12 +38,12 @@
         return null;
     };
 
-    var roomName = {{ room_name_json }};
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-    var username = document.getElementById("username").value;
-    var roomCSM = document.getElementById("roomCSM").value;
-    var chat_key = document.getElementById("chat_key").value;
-    var chat_iv = document.getElementById("chat_iv").value;
+    var roomName = {{ room_name_json }};
+    var username = {{ username }} //document.getElementById("username").value;
+    var roomCSM = {{ roomCSM }} //document.getElementById("roomCSM").value;
+    var chat_key = {{ chat_key }} //document.getElementById("chat_key").value;
+    var chat_iv = {{ chat_iv }} //document.getElementById("chat_iv").value;
     var intro = ''
     //var intro = '~Never reveal your password to our staff~\n'
 

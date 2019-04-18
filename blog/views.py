@@ -34,8 +34,6 @@ chat_ready = bool(os.environ.get('CHAT_READY', cs_chat_ready_def))
 room_main = mark_safe(os.environ.get('ROOM_MAIN', temp_ROOM_MAIN))
 room_cs_master = mark_safe(os.environ.get('ROOM_CS_MASTER', temp_ROOM_CS_MASTER))
 
-print('Environment variables:',chat_key,chat_iv,chat_ready,room_main,room_cs_master) #TO BE DELETED
-
 def index(request):
     todaytag = str(datetime.date.today())
     ct = WebCounter(datestr=todaytag) if not WebCounter.objects.filter(datestr=todaytag) else WebCounter.objects.get(datestr=todaytag)
@@ -187,7 +185,7 @@ def cs_chat_monitor(request,username):
 
 def cs_chat_room(request,room_name,username,title):
     if chat_ready:
-        return render(request,'blog_t/cs_chat_room.html',{'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'username':username,'room_name_json': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
+        return render(request,'blog_t/cs_chat_room.html',{'roomCSM':mark_safe(room_cs_master),'chat_key':mark_safe(chat_key),'chat_iv':mark_safe(chat_iv),'username':mark_safe(username),'room_name_json': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
     else:
         raise Http404()
 
