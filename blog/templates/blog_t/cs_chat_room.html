@@ -27,7 +27,7 @@
         <input id="chat-message-input" placeholder="Type your chat here" type="text" style="width:100%"><br/>
         <input id="chat-message-submit" type="button" value="Send"/>
         <input type="text" value={{username}} id="username" style="display:none;">
-        <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
+        <input type="text" value={{roomCSM}} id="roomCSM" style="display:none;">
         <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
         <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
     </div>
@@ -41,15 +41,15 @@
     var roomName = {{ room_name_json }};
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
-    var cscRoom = document.getElementById("cscRoom").value;
+    var roomCSM = document.getElementById("roomCSM").value;
     var chat_key = document.getElementById("chat_key").value;
     var chat_iv = document.getElementById("chat_iv").value;
     var intro = ''
     //var intro = '~Never reveal your password to our staff~\n'
 
-    var cscSocket = new WebSocket(
+    var csmSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
-        '/ws/chat/' + cscRoom + '/');
+        '/ws/chat/' + roomCSM + '/');
 
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
@@ -102,7 +102,7 @@
         chatSocket.send(encrypt(JSON.stringify({
             'action': '>'+username}), chat_key, chat_iv));
         document.querySelector('#chat-log').value=intro;
-        cscSocket.send(encrypt(JSON.stringify({
+        csmSocket.send(encrypt(JSON.stringify({
             'message': roomName+'|'+username}), chat_key, chat_iv));
     };
 
@@ -161,7 +161,7 @@
     };
 
     window.onunload = function (e) {
-        cscSocket.send(encrypt(JSON.stringify({
+        csmSocket.send(encrypt(JSON.stringify({
             'message': roomName+'!'+username, 'logs':document.querySelector('#chat-log').value}), chat_key, chat_iv));
         chatSocket.send(encrypt(JSON.stringify({
             'action': '<'+username}), chat_key, chat_iv));

@@ -12,7 +12,7 @@
 <body>
     <textarea id="chat-log" cols="70" rows="42" disabled></textarea><br/> <!-- cols="52" rows="25" -->
     <input type="text" value={{username}} id="username" style="display:none;">
-    <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
+    <input type="text" value={{roomCSM}} id="roomCSM" style="display:none;">
     <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
     <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
 </body>
@@ -24,7 +24,7 @@
 
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var username = document.getElementById("username").value;
-    var roomName = document.getElementById("cscRoom").value;
+    var roomName = document.getElementById("roomCSM").value;
     var chat_key = document.getElementById("chat_key").value;
     var chat_iv = document.getElementById("chat_iv").value;    
     var justjoined = false;

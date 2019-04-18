@@ -70,7 +70,7 @@
                             <a href="#" onclick="requestChat();return false;">Chat</a>
                         {% endif %}                        
                     {% endif %}
-                    <input type="text" value={{cscRoom}} id="cscRoom" style="display:none;">
+                    <input type="text" value={{roomCSM}} id="roomCSM" style="display:none;">
                     <input type="text" value={{chat_key}} id="chat_key" style="display:none;">
                     <input type="text" value={{chat_iv}} id="chat_iv" style="display:none;">
                 </ul>
@@ -124,7 +124,7 @@
 </body>
 <script>
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-    var roomName = document.getElementById("cscRoom").value;
+    var roomName = document.getElementById("roomCSM").value;
     var chatSocket = new WebSocket(
         ws_scheme + '://' + window.location.host +
         '/ws/chat/' + roomName + '/');
