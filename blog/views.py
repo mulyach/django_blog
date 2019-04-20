@@ -83,7 +83,7 @@ def upload_image(request,username):
                 if save_remote:
                     failed_msg = 'Image save unsuccessful. Please retry later.'
                     failed_response = render(request,'messages.html',{'messages':[failed_msg]})
-                    
+
                     imgf= form.cleaned_data['img_file'].read()
                     image_data_str = base64.b64encode(imgf).decode()
                     try:
@@ -157,8 +157,8 @@ def add_comment(request,article_id):
 def signature(request):
     if request.method == 'POST':
         r_image_data = request.POST['image_data']
-        r_signature_owner = request.POST['signature_owner']
-        image_format, image_data_str = r_image_data.split(';base64,')   #image data str for sending out
+        r_signature_owner = request.POST['signature_owner']                 #need to clean this
+        image_format, image_data_str = r_image_data.split(';base64,')
         image_data = base64.b64decode(image_data_str)
 
         if save_remote:
