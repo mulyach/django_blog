@@ -76,7 +76,8 @@ class wscomm:
         while loop and self.time.time()-start_time<self.loop_exp:
             if self.receivedLs:
                 result = self.receivedLs[0]
-                self.receivedLs = list(self.receivedLs[1:])
+                print('result:',result)
+                self.receivedLs.remove(result)
                 loop = False
                 success = [True,'']
         return success,result
