@@ -33,7 +33,7 @@ class wscomm:
         self.receivedLs = []
         self.startWS()
         print('CONNECTING')     #TO BE DELETED
-        rcv_thrd = myThread(self.ws,self.chat_key,self.chat_iv,self.receive_chat)
+        rcv_thrd = myThread(self.wS,self.chat_key,self.chat_iv,self.receive_chat)
         rcv_thrd.start()
 
     def startWS(self):
