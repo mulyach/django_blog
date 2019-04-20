@@ -7,7 +7,6 @@
   justify-content: center;">
         <br>
         <canvas id="can" width="300" height="250" style="border:2px solid;"></canvas>
-        <img id="canvasimg" style="display:none;">
     </div>
     <div style="width: 100%; display: flex; justify-content: center;">
         <input type="button" value="Upload" id="btn" size="30" onclick="save()" style="top:80%;left:10%; cursor: pointer;">
@@ -113,16 +112,11 @@ function erase() {
     var m = confirm("Click OK to clear");
     if (m) {
         ctx.clearRect(0, 0, w, h);
-        document.getElementById("canvasimg").style.display = "none";
     }
 }
 
 function save() {
-    document.getElementById("canvasimg").style.border = "2px solid";
     var dataURL = canvas.toDataURL("image/png");
-    console.log(dataURL);
-    document.getElementById("canvasimg").src = dataURL;
-    document.getElementById("canvasimg").style.display = "inline";
     document.getElementById("image_data").value = dataURL;
     document.getElementById("uploaderForm").submit()
 }
