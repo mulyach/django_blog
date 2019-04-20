@@ -30,11 +30,12 @@ class wscomm:
             self.wS = self.websocket.create_connection('wss://'+self.domain+'/ws/chat/'+self.room_name+'/')    #how to detect http/https protocol?
 
     def sendWS(self,message,chat_key,chat_iv):
+        from .enc_dec import encrypt
         success = [True,'']
         loop = True
         while loop:
             try:
-                self.wS.send(self.encrypt(self.json.dumps({'message':message}), chat_key,chat_iv))
+                self.wS.send(encrypt(self.json.dumps({'message':message}), chat_key,chat_iv))
                 self.sentLs.append(message)
                 loop = False
             except (ConnectionResetError,BrokenPipeError):
@@ -50,11 +51,12 @@ class wscomm:
         return success
 
     def receiveWS(self,chat_key,chat_iv):
+        from .enc_dec import decrypt
         success = [True,'']
         result,loop = '',True
         while loop:
             try:
-                result = self.json.loads(self.decrypt(self.wS.recv(), chat_key,chat_iv))['message']
+                result = self.json.loads(decrypt(self.wS.recv(), chat_key,chat_iv))['message']
             except (ConnectionResetError,BrokenPipeError):
                 print('RECONNECTING MAIN ROOM')
                 self.connectWS()

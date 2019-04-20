@@ -14,6 +14,7 @@ from .commCls import wscomm
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.sites.shortcuts import apps
 #chat_started = False   #TO BE DELETED
 max_attempt = 2
 cs_chat_ready_def = True
@@ -185,8 +186,7 @@ def cs_chat_room(request,room_name,username,title):
         raise Http404()
 
 def send_OTP(request,message):
-    print('get_current_site dir: ',dir(get_current_site(request)))  #TO BE DELETED
-    print('get_current_site name: ',get_current_site(request).name)  #TO BE DELETED
+    print('shortcuts.apps dir: ',dir(apps(request)))  #TO BE DELETED
 
     try:
         wsObj
