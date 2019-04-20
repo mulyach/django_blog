@@ -191,10 +191,10 @@ def send_OTP(request,message):
         wsObj = wscomm(get_current_site(request).domain,room_otp)
     message = '~01'+message
     result,attempt = '',1
-    success = wsObj.sendWS(message,chat_key,chat_iv)
+    success = wsObj.sendWS(message,json.loads(chat_key),json.loads(chat_iv))
     if success[0]:
         while result!='S' and attempt<=max_attempt:
-            result = wsObj.receive(chat_key,chat_iv)
+            result = wsObj.receive(json.loads(chat_key),json.loads(chat_iv))
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
             attempt+=1
         return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
@@ -207,10 +207,10 @@ def enter_OTP(request,mobileno,message):
     except NameError:
         wsObj = wscomm(get_current_site(request).domain,room_otp)
     message = '~02'+mobileno+'|'+message
-    wsObj.sendWS(message,chat_key,chat_iv)
+    wsObj.sendWS(message,json.loads(chat_key),json.loads(chat_iv))
     result,attempt = '',1
     while result not in ['Y','N'] and attempt<=max_attempt:
-        success,result = wsObj.receive(chat_key,chat_iv)
+        success,result = wsObj.receive(json.loads(chat_key),json.loads(chat_iv))
         print('RESULT:{}. Attempt:{}'.format(result,attempt))
         attempt+=1
     status = 'OTP verification unsuccessful. Please retry.'

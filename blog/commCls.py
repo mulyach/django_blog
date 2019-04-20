@@ -35,7 +35,6 @@ class wscomm:
         loop = True
         while loop:
             try:
-                print(message,chat_key,chat_iv)
                 self.wS.send(encrypt(self.json.dumps({'message':message}), chat_key,chat_iv))
                 self.sentLs.append(message)
                 loop = False
