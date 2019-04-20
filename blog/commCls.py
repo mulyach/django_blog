@@ -54,9 +54,9 @@ class wscomm:
         while loop:
             try:
                 self.wS.send(encrypt(self.json.dumps({'message':message}),self.chat_key,self.chat_iv))
-                print('message in sendWS:',message)
+                #print('message in sendWS:',message)
                 self.sentLs.append(message)
-                print('sentLs in sendWS',self.sentLs)
+                #print('sentLs in sendWS',self.sentLs)
                 loop = False
             except (ConnectionResetError,BrokenPipeError):
                 print('RECONNECTING')     #TO BE DELETED
@@ -84,7 +84,7 @@ class wscomm:
 
     def receive_chat(self,ws,chat_key,chat_iv):
         from .enc_dec import decrypt
-        print('receive_chat started!')
+        #print('receive_chat started!')
         while True:
             try:
                 msg = self.json.loads(decrypt(ws.recv(),chat_key,chat_iv))
@@ -98,7 +98,7 @@ class wscomm:
                     if item in self.sentLs:
                         self.sentLs.remove(item)
                         self.receivedLs.remove(item)
-                print('sentLs in receive_chat:',self.sentLs)
-                print('receivedLs in receive_chat:',self.receivedLs)
+                #print('sentLs in receive_chat:',self.sentLs)
+                #print('receivedLs in receive_chat:',self.receivedLs)
             except:
                 continue
