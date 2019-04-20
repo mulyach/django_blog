@@ -220,6 +220,7 @@ def enter_OTP(request,mobileno,message):
         if success_rcv[0]:
             if result=='Y':
                 status = 'OTP verified'
+                del wsObj
             elif result=='N':
                 status = 'OTP or mobile number did not match'
         return render(request,'messages.html',{'messages':[status]})

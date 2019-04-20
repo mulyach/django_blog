@@ -76,7 +76,7 @@ class wscomm:
         while loop and self.time.time()-start_time<self.loop_exp:
             if self.receivedLs:
                 result = self.receivedLs[0]
-                print('result:',result)
+                #print('result:',result)
                 self.receivedLs.remove(result)
                 loop = False
                 success = [True,'']
@@ -89,7 +89,7 @@ class wscomm:
             try:
                 msg = self.json.loads(decrypt(ws.recv(),chat_key,chat_iv))
                 message = msg['message']
-                print('message in receive_chat:',message)
+                #print('message in receive_chat:',message)
                 if message in self.sentLs:
                     self.sentLs.remove(message)
                 else:
@@ -102,3 +102,7 @@ class wscomm:
                 #print('receivedLs in receive_chat:',self.receivedLs)
             except:
                 continue
+
+    def __del__(self):
+        print('DISCONNECTING')
+        self.wS.close()
