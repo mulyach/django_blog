@@ -33,8 +33,8 @@ class wscomm:
         self.receivedLs = []
         self.startWS()
         print('CONNECTING')     #TO BE DELETED
-        rcv_thrd = myThread(self.wS,self.chat_key,self.chat_iv,self.receive_chat)
-        rcv_thrd.start()
+        self.rcv_thrd = myThread(self.wS,self.chat_key,self.chat_iv,self.receive_chat)
+        self.rcv_thrd.start()
 
     def startWS(self):
         self.ChatConsumer({'url_route':{'kwargs':{'room_name':self.room_name}}})
@@ -84,6 +84,7 @@ class wscomm:
 
     def receive_chat(self,ws,chat_key,chat_iv):
         from .enc_dec import decrypt
+        print('receive_chat started!!')
         while True:
             try:
                 msg = json.loads(decrypt(ws.recv(),chat_key,chat_iv))
