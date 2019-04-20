@@ -16,7 +16,7 @@ class wscomm:
         self.ChatConsumer({'url_route':{'kwargs':{'room_name':self.room_name}}})
         self.sentLs = []
         self.startWS()
-        print('CONNECTING MAIN ROOM')
+        print('CONNECTING')
 
     def startWS(self):
         self.ChatConsumer({'url_route':{'kwargs':{'room_name':self.room_name}}})
@@ -35,14 +35,15 @@ class wscomm:
         loop = True
         while loop:
             try:
+                print(message,chat_key,chat_iv)
                 self.wS.send(encrypt(self.json.dumps({'message':message}), chat_key,chat_iv))
                 self.sentLs.append(message)
                 loop = False
             except (ConnectionResetError,BrokenPipeError):
-                print('RECONNECTING MAIN ROOM')
+                print('RECONNECTING')
                 self.connectWS()
             except self.websocket._exceptions.WebSocketConnectionClosedException:
-                print('RESTARTING MAIN ROOM')
+                print('RESTARTING')
                 self.startWS()
             except Exception as er:
                 success = [False,str(er)]
@@ -58,10 +59,10 @@ class wscomm:
             try:
                 result = self.json.loads(decrypt(self.wS.recv(), chat_key,chat_iv))['message']
             except (ConnectionResetError,BrokenPipeError):
-                print('RECONNECTING MAIN ROOM')
+                print('RECONNECTING')
                 self.connectWS()
             except self.websocket._exceptions.WebSocketConnectionClosedException:
-                print('RESTARTING MAIN ROOM')
+                print('RESTARTING')
                 self.startWS()
             except Exception as er:
                 success = [False,str(er)]
