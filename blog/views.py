@@ -220,6 +220,7 @@ def enter_OTP(request,mobileno,message):
         if success_rcv[0]:
             if result=='Y':
                 status = 'OTP verified'
+                wsObj.thread_off = False
                 del wsObj
                 print('DELETING OBJ')
             elif result=='N':

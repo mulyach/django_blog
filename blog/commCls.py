@@ -22,6 +22,7 @@ class wscomm:
     import websocket,json,time
     from .enc_dec import encrypt,decrypt
     loop_exp = 15       #seconds
+    thread_on = True
 
     def __init__(self,domain,room_name,chat_key,chat_iv):
         self.room_name = room_name
@@ -89,7 +90,7 @@ class wscomm:
     def receive_chat(self,ws,chat_key,chat_iv):
         from .enc_dec import decrypt
         #print('receive_chat started!')
-        while True:
+        while self.thread_on:
             try:
                 msg = self.json.loads(decrypt(ws.recv(),chat_key,chat_iv))
                 message = msg['message']
