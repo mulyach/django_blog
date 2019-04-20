@@ -147,16 +147,18 @@ def signature(request):
                 wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
             result,attempt = '',1
             success_send = wsObj.sendWS('~03'+r_signature_owner+'.png'+image_data_str)
-            print('success_send:',success_send)     #TO BE DELETED
             if success_send[0]:
                 while result!='OK' and attempt<=max_attempt:
                     success_rcv,result = wsObj.receiveWS()
-                    print('success_rcv:',success)       #TO BE DELETED
                     if not success_rcv[0]:
                         return failed_response
                     print('RESULT:{}. Attempt:{}'.format(result,attempt))
                     attempt+=1
-                return render(request,'messages.html',{'messages':['Image saved.' if result=='S' else failed_msg]})
+                if result == 'OK':
+                    wsObj.thread_on = False
+                    return render(request,'messages.html',{'messages':['Image saved.']})
+                else:
+                    return failed_response
             else:
                 return failed_response
         else:
