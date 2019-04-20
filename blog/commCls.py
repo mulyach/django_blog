@@ -9,7 +9,7 @@ class wscomm:
     from .consumers import ChatConsumer
     import websocket,json,time
     from .enc_dec import encrypt,decrypt
-    loop_exp = 30 #seconds
+    loop_exp = 15 #seconds
 
     def __init__(self,domain,room_name):
         self.room_name = room_name
