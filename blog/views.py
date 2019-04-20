@@ -194,7 +194,7 @@ def send_OTP(request,message):
     success = wsObj.sendWS(message,json.loads(chat_key),json.loads(chat_iv))
     if success[0]:
         while result!='S' and attempt<=max_attempt:
-            result = wsObj.receive(json.loads(chat_key),json.loads(chat_iv))
+            result = wsObj.receiveWS(json.loads(chat_key),json.loads(chat_iv))
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
             attempt+=1
         return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
@@ -210,7 +210,7 @@ def enter_OTP(request,mobileno,message):
     wsObj.sendWS(message,json.loads(chat_key),json.loads(chat_iv))
     result,attempt = '',1
     while result not in ['Y','N'] and attempt<=max_attempt:
-        success,result = wsObj.receive(json.loads(chat_key),json.loads(chat_iv))
+        success,result = wsObj.receiveWS(json.loads(chat_key),json.loads(chat_iv))
         print('RESULT:{}. Attempt:{}'.format(result,attempt))
         attempt+=1
     status = 'OTP verification unsuccessful. Please retry.'
