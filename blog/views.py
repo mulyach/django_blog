@@ -188,13 +188,13 @@ def send_OTP(request,message):
     try:
         wsObj
     except NameError:
-        wsObj = wscomm(get_current_site(request).domain,room_otp)
+        wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
     message = '~01'+message
     result,attempt = '',1
-    success_send = wsObj.sendWS(message,json.loads(chat_key),json.loads(chat_iv))
+    success_send = wsObj.sendWS(message)
     if success_send[0]:
         while result!='S' and attempt<=max_attempt:
-            success_rcv,result = wsObj.receiveWS(json.loads(chat_key),json.loads(chat_iv))
+            success_rcv,result = wsObj.receiveWS()
             if not success_rcv[0]:
                 return failed_response
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
@@ -207,13 +207,13 @@ def enter_OTP(request,mobileno,message):
     try:
         wsObj
     except NameError:
-        wsObj = wscomm(get_current_site(request).domain,room_otp)
+        wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
     message = '~02'+mobileno+'|'+message
-    success_send = wsObj.sendWS(message,json.loads(chat_key),json.loads(chat_iv))
+    success_send = wsObj.sendWS(message)
     if success_send[0]:
         result,attempt = '',1
         while result not in ['Y','N'] and attempt<=max_attempt:
-            success_rcv,result = wsObj.receiveWS(json.loads(chat_key),json.loads(chat_iv))
+            success_rcv,result = wsObj.receiveWS()
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
             attempt+=1
         status = 'OTP verification unsuccessful. Please retry.'
