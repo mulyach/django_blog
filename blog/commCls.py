@@ -5,7 +5,7 @@ Created on Sat Apr 20 07:28:33 2019
 
 @author: mulya
 """
-class ws_comm:
+class wscomm:
     from .consumers import ChatConsumer
     import websocket,json
     from .enc_dec import encrypt,decrypt
