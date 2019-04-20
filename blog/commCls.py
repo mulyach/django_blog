@@ -7,8 +7,9 @@ Created on Sat Apr 20 07:28:33 2019
 """
 class wscomm:
     from .consumers import ChatConsumer
-    import websocket,json
+    import websocket,json,time
     from .enc_dec import encrypt,decrypt
+    loop_exp = 15       #seconds
 
     def __init__(self,domain,room_name):
         self.room_name = room_name
@@ -52,9 +53,9 @@ class wscomm:
 
     def receiveWS(self,chat_key,chat_iv):
         from .enc_dec import decrypt
-        success = [True,'']
-        result,loop = '',True
-        while loop:
+        success = [False,'Response timeout']
+        result,loop,start_time = '',True,self.time.time()
+        while loop and self.time.time()-start_time<self.loop_exp:
             try:
                 result = self.json.loads(decrypt(self.wS.recv(), chat_key,chat_iv))['message']
                 print('sentLs',self.sentLs)
@@ -73,4 +74,5 @@ class wscomm:
                 self.sentLs.remove(result)
             else:
                 loop = False
+                success = [True,'']
         return success,result
