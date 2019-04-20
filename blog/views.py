@@ -80,13 +80,36 @@ def upload_image(request,username):
         if form.is_valid():
             article = Article.objects.get(id = form.cleaned_data['article'].id)
             if article in articles or User.objects.get(username=username) in User.objects.filter(is_staff=True):
-                """
-                imgf= form.cleaned_data['img_file'].read()
-                image_data = base64.b64encode(imgf).decode()    #image data for sending out
-                """
-                newimage = article.image_set.create(caption = form.cleaned_data['caption'], img_file = form.cleaned_data['img_file'])
-                newimage.save()
-                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+                if save_remote:
+                    failed_msg = 'Image save unsuccessful. Please retry later.'
+                    failed_response = render(request,'messages.html',{'messages':[failed_msg]})
+                    
+                    imgf= form.cleaned_data['img_file'].read()
+                    image_data_str = base64.b64encode(imgf).decode()
+                    try:
+                        wsObj
+                    except NameError:
+                        wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
+                    result,attempt = '',1
+                    success_send = wsObj.sendWS('~03'+form.cleaned_data['caption']+'.png'+image_data_str)
+                    if success_send[0]:
+                        while result!='OK' and attempt<=max_attempt:
+                            success_rcv,result = wsObj.receiveWS()
+                            if not success_rcv[0]:
+                                return failed_response
+                            print('RESULT:{}. Attempt:{}'.format(result,attempt))
+                            attempt+=1
+                        if result == 'OK':
+                            wsObj.thread_on = False
+                            return render(request,'messages.html',{'messages':['Image saved.']})
+                        else:
+                            return failed_response
+                    else:
+                        return failed_response
+                else:
+                    newimage = article.image_set.create(caption = form.cleaned_data['caption'], img_file = form.cleaned_data['img_file'])
+                    newimage.save()
+                    return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
             else:
                 return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
     else:
