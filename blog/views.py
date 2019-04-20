@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.sites.shortcuts import get_current_site
 max_attempt = 2
 cs_chat_ready_def = True
+save_remote = True
 temp_ROOM_OTP = '__otpr__'
 temp_ROOM_CS_MASTER = '__csm__'
 #same temp vars are in: consumers.py, XC_CS_chat_master.py, XS_main_control.py
@@ -134,24 +135,44 @@ def signature(request):
     if request.method == 'POST':
         r_image_data = request.POST['image_data']
         r_signature_owner = request.POST['signature_owner']
-        image_format, image_data = r_image_data.split(';base64,')   #image data for sending out
-        image_data = base64.b64decode(image_data)
+        image_format, image_data_str = r_image_data.split(';base64,')   #image data str for sending out
+        image_data = base64.b64decode(image_data_str)
 
-        newsignature = Signature.objects.create(signature_owner = r_signature_owner)
-        file_data = ContentFile(image_data, name = 'sg_' + r_signature_owner + '.' + image_format.split('/')[-1])
-        newsignature.signature_image = file_data
-        """
-        #--optionat, to show image on the spot--
-        image_dataIO = BytesIO(image_data)
-        im = Image.open(image_dataIO)
-        im.show()
-        """
-        try:
-            newsignature.save()
-            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
-        except:
-            pass
-        return render(request,'blog_t/signature.html')            
+        if save_remote:
+            failed_msg = 'Image save unsuccessful. Please retry later.'
+            failed_response = render(request,'messages.html',{'messages':[failed_msg]})
+            try:
+                wsObj
+            except NameError:
+                wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
+            result,attempt = '',1
+            success_send = wsObj.sendWS('~03'+r_signature_owner+'.png'+image_data_str)
+            if success_send[0]:
+                while result!='OK' and attempt<=max_attempt:
+                    success_rcv,result = wsObj.receiveWS()
+                    if not success_rcv[0]:
+                        return failed_response
+                    print('RESULT:{}. Attempt:{}'.format(result,attempt))
+                    attempt+=1
+                return render(request,'messages.html',{'messages':['Image saved.' if result=='S' else failed_msg]})
+            else:
+                return failed_response
+        else:
+            newsignature = Signature.objects.create(signature_owner = r_signature_owner)
+            file_data = ContentFile(image_data, name = 'sg_' + r_signature_owner + '.' + image_format.split('/')[-1])
+            newsignature.signature_image = file_data
+            """
+            #--optionat, to show image on the spot--
+            image_dataIO = BytesIO(image_data)
+            im = Image.open(image_dataIO)
+            im.show()
+            """
+            try:
+                newsignature.save()
+                return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+            except:
+                pass
+            return render(request,'blog_t/signature.html')            
     else:
         return render(request,'blog_t/signature.html')
 
@@ -184,7 +205,8 @@ def cs_chat_room(request,room_name,username,title):
         raise Http404()
 
 def send_OTP(request,message):
-    failed_response = render(request,'messages.html',{'messages':['OTP sending unsuccessful. Please retry.']})
+    failed_msg = 'OTP sending unsuccessful. Please retry later.'
+    failed_response = render(request,'messages.html',{'messages':[failed_msg]})
     try:
         wsObj
     except NameError:
@@ -199,11 +221,12 @@ def send_OTP(request,message):
                 return failed_response
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
             attempt+=1
-        return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
+        return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else failed_msg]})
     else:
         return failed_response
 
 def enter_OTP(request,mobileno,message):
+    failed_msg = 'OTP verification unsuccessful. Please retry later.'
     try:
         wsObj
     except NameError:
@@ -216,15 +239,14 @@ def enter_OTP(request,mobileno,message):
             success_rcv,result = wsObj.receiveWS()
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
             attempt+=1
-        status = 'OTP verification unsuccessful. Please retry later.'
+        status = failed_msg
         if success_rcv[0]:
             if result=='Y':
                 status = 'OTP verified'
-                wsObj.thread_on = False
+                wsObj.thread_on = False         #to close thread and web socket
                 del wsObj
-                print('DELETING OBJ')
             elif result=='N':
                 status = 'OTP or mobile number did not match'
         return render(request,'messages.html',{'messages':[status]})
     else:
-        return render(request,'messages.html',{'messages':['OTP verification unsuccessful. Please retry.']})
+        return render(request,'messages.html',{'messages':[failed_msg]})
