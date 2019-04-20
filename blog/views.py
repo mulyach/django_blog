@@ -186,7 +186,7 @@ def cs_chat_room(request,room_name,username,title):
         raise Http404()
 
 def send_OTP(request,message):
-    print('shortcuts.apps dir: ',dir(apps(request)))  #TO BE DELETED
+    print('get_app_configs dir: ',dir(apps.get_app_configs(request)))  #TO BE DELETED
 
     try:
         wsObj
