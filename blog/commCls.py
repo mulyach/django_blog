@@ -74,7 +74,7 @@ class wscomm:
         ct =0
         while loop and self.time.time()-start_time<self.loop_exp:
             ct+=1
-            if ct%100==0:print('loop receivedLs:',self.receivedLs)
+            #if ct%1000==0:print('loop receivedLs:',self.receivedLs)
             if self.receivedLs:
                 result = self.receivedLs[0]
                 self.receivedLs = self.receivedLs[1:]
