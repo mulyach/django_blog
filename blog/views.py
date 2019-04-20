@@ -14,7 +14,6 @@ from .commCls import wscomm
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.sites.shortcuts import apps
 #chat_started = False   #TO BE DELETED
 max_attempt = 2
 cs_chat_ready_def = True
