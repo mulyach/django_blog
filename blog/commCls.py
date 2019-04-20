@@ -71,10 +71,7 @@ class wscomm:
     def receiveWS(self):
         success = [False,'Response timeout']
         result,loop,start_time = '',True,self.time.time()
-        ct =0
         while loop and self.time.time()-start_time<self.loop_exp:
-            ct+=1
-            #if ct%1000==0:print('loop receivedLs:',self.receivedLs)
             if self.receivedLs:
                 result = self.receivedLs[0]
                 self.receivedLs = self.receivedLs[1:]
@@ -84,13 +81,14 @@ class wscomm:
 
     def receive_chat(self,ws,chat_key,chat_iv):
         from .enc_dec import decrypt
-        print('receive_chat started!!')
+        print('receive_chat started!')
         while True:
             try:
                 msg = self.json.loads(decrypt(ws.recv(),chat_key,chat_iv))
                 message = msg['message']
+                print('sentLs:',self.sentLs)
                 if message in self.sentLs:
-                    self.sentLs.remove(result)
+                    self.sentLs.remove(message)
                 else:
                     self.receivedLs.append(message)
                     print('receivedLs:',self.receivedLs)
