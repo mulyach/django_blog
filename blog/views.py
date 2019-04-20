@@ -27,7 +27,7 @@ chat_key = mark_safe(json.dumps(os.environ.get('CHAT_KEY', temp_CHAT_KEY)))
 chat_iv = mark_safe(json.dumps(os.environ.get('CHAT_IV', temp_CHAT_IV)))
 chat_ready = bool(os.environ.get('CHAT_READY', cs_chat_ready_def))          #CHANGE TO CS_CHAT_READY
 room_cs_master = mark_safe(json.dumps(os.environ.get('ROOM_CS_MASTER', temp_ROOM_CS_MASTER)))
-room_otp = mark_safe(json.dumps(os.environ.get('ROOM_OTP', temp_ROOM_OTP)))
+room_otp = mark_safe(os.environ.get('ROOM_OTP', temp_ROOM_OTP))
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -186,6 +186,7 @@ def cs_chat_room(request,room_name,username,title):
 
 def send_OTP(request,message):
     print('get_current_site dir: ',dir(get_current_site(request)))  #TO BE DELETED
+    print('get_current_site name: ',get_current_site(request).name)  #TO BE DELETED
 
     try:
         wsObj
