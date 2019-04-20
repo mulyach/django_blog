@@ -1,38 +1,32 @@
 from django.shortcuts import render,get_object_or_404
-from django.http import HttpResponseRedirect, Http404, HttpResponse #, StreamingHttpResponse
+from django.http import Http404, HttpResponse #, HttpResponseRedirect, StreamingHttpResponse
 from django.template.loader import get_template
-from django.urls import reverse
+#from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
-from .models import Category,Article,ItemCounter,WebCounter,Image,Signature
+from .models import Category,Article,ItemCounter,WebCounter,Signature
 from .forms import Add_Comment,Compose_Form,Image_Form
-import datetime
-from django.views.generic.edit import FormView
-from io import BytesIO
-from PIL import Image
-import base64
+import datetime,base64,json,os,commCls
+#from io import BytesIO
+#from PIL import Image
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
-import json,os
 from django.contrib.sites.shortcuts import get_current_site
-chat_started = False
-from .consumers import ChatConsumer
-import websocket,time
+#chat_started = False   #TO BE DELETED
 max_attempt = 2
-from .enc_dec import encrypt,decrypt
 cs_chat_ready_def = True
-temp_ROOM_MAIN = '__utama__'
+temp_ROOM_OTP = '__otpr__'
 temp_ROOM_CS_MASTER = '__csm__'
-#same temp vars are in: consumers.py, XC_CS_chat_master.py, XS_OTP_chat_master.py
+#same temp vars are in: consumers.py, XC_CS_chat_master.py, XS_main_control.py
 temp_CHAT_KEY = 'iMVUI1-4e-U_Ejr_mWwX-RdR5dz4ECb1'
 temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
 #------
 chat_key = mark_safe(json.dumps(os.environ.get('CHAT_KEY', temp_CHAT_KEY)))
 chat_iv = mark_safe(json.dumps(os.environ.get('CHAT_IV', temp_CHAT_IV)))
-chat_ready = bool(os.environ.get('CHAT_READY', cs_chat_ready_def))
+chat_ready = bool(os.environ.get('CHAT_READY', cs_chat_ready_def))          #CHANGE TO CS_CHAT_READY
 room_cs_master = mark_safe(json.dumps(os.environ.get('ROOM_CS_MASTER', temp_ROOM_CS_MASTER)))
-room_main = mark_safe(json.dumps(os.environ.get('ROOM_MAIN', temp_ROOM_MAIN)))
+room_otp = mark_safe(json.dumps(os.environ.get('ROOM_OTP', temp_ROOM_OTP)))
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -189,89 +183,41 @@ def cs_chat_room(request,room_name,username,title):
     else:
         raise Http404()
 
-def startWSchat(request):
-    global sent_list
-    room_name = room_main
-    ChatConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
-    connectWSchat(request,room_name)
-    sent_list = []
-
-def connectWSchat(request,room_name):
-    global utama_ws
-    try:
-        utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
-    except websocket._exceptions.WebSocketBadStatusException:
-        ChatConsumer({'url_route':{'kwargs':{'room_name':room_name}}})
-        utama_ws = websocket.create_connection('ws://'+get_current_site(request).domain+'/ws/chat/'+room_name+'/')    #how to detect https protocol?
-
-def sendWSchat(request,message):
-    global utama_ws,sent_list
-    lanjut = True
-    try:
-        utama_ws
-    except NameError:
-        startWSchat(request)
-    print('CONNECTING MAIN ROOM')
-    connectWSchat(request,room_main)
-    while lanjut:
-        try:
-            utama_ws.send(encrypt(json.dumps({'message':message}), chat_key,chat_iv))
-            sent_list.append(message)
-            lanjut = False
-        except (ConnectionResetError,BrokenPipeError):
-            print('RECONNECTING MAIN ROOM')
-            connectWSchat(request,room_main)
-        except websocket._exceptions.WebSocketConnectionClosedException:
-            print('RESTARTING MAIN ROOM')
-            startWSchat(request)
-
 def send_OTP(request,message):
+    print('get_current_site dir: ',dir(get_current_site(request)))  #TO BE DELETED
+
+    try:
+        wsObj
+    except NameError:
+        wsObj = commCls.wscomm(get_current_site(request).domain,room_otp)
     message = '~01'+message
-    lanjut,result,attempt = True,'',1
-    sendWSchat(request,message)
-    while result!='S' and attempt<=max_attempt:
-        while lanjut:
-            try:
-                result = json.loads(decrypt(utama_ws.recv(), chat_key,chat_iv))['message']
-            except (ConnectionResetError,BrokenPipeError):
-                print('RECONNECTING MAIN ROOM')
-                connectWSchat(request,room_main)
-            except websocket._exceptions.WebSocketConnectionClosedException:
-                print('RESTARTING MAIN ROOM')
-                startWSchat(request)
-            if result in sent_list:
-                sent_list.remove(result)
-            else:
-                lanjut = False
-        print('RESULT:{}. Attempt:{}'.format(result,attempt))
-        attempt+=1
-    return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
+    result,attempt = '',1
+    success = wsObj.sendWS(message,chat_key,chat_iv)
+    if success[0]:
+        while result!='S' and attempt<=max_attempt:
+            result = wsObj.receive(chat_key,chat_iv)
+            print('RESULT:{}. Attempt:{}'.format(result,attempt))
+            attempt+=1
+        return render(request,'messages.html',{'messages':['OTP sent to '+message[3:] if result=='S' else 'OTP sending unsuccessful. Please retry.']})
+    else:
+        return render(request,'messages.html',{'messages':['OTP sending unsuccessful. Please retry.']})
 
 def enter_OTP(request,mobileno,message):
-    global utama_ws,sent_list
+    try:
+        wsObj
+    except NameError:
+        wsObj = commCls.wscomm(get_current_site(request).domain,room_otp)
     message = '~02'+mobileno+'|'+message
-    sendWSchat(request,message)
-    lanjut,result,attempt = True,'',1
+    wsObj.sendWS(message,chat_key,chat_iv)
+    result,attempt = '',1
     while result not in ['Y','N'] and attempt<=max_attempt:
-        while lanjut:
-            try:
-                result = json.loads(decrypt(utama_ws.recv(), chat_key,chat_iv))['message']
-            except (ConnectionResetError,BrokenPipeError):
-                print('RECONNECTING MAIN ROOM')
-                connectWSchat(request,room_main)
-            except websocket._exceptions.WebSocketConnectionClosedException:
-                print('RESTARTING MAIN ROOM')
-                startWSchat(request)
-            if result in sent_list:
-                sent_list.remove(result)
-            else:
-                lanjut = False
+        success,result = wsObj.receive(chat_key,chat_iv)
         print('RESULT:{}. Attempt:{}'.format(result,attempt))
         attempt+=1
-    if result=='Y':
-        status = 'OTP verified'
-    elif result=='N':
-        status = 'OTP or mobile number did not match'
-    else:
-        status = 'OTP verification unsuccessful. Please retry.'
+    status = 'OTP verification unsuccessful. Please retry.'
+    if success[0]:
+        if result=='Y':
+            status = 'OTP verified'
+        elif result=='N':
+            status = 'OTP or mobile number did not match'
     return render(request,'messages.html',{'messages':[status]})
