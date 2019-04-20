@@ -7,7 +7,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from .models import Category,Article,ItemCounter,WebCounter,Signature
 from .forms import Add_Comment,Compose_Form,Image_Form
-import datetime,base64,json,os,commCls
+import datetime,base64,json,os
+from .commCls import wscomm
 #from io import BytesIO
 #from PIL import Image
 from django.core.files.base import ContentFile
@@ -189,7 +190,7 @@ def send_OTP(request,message):
     try:
         wsObj
     except NameError:
-        wsObj = commCls.wscomm(get_current_site(request).domain,room_otp)
+        wsObj = wscomm(get_current_site(request).domain,room_otp)
     message = '~01'+message
     result,attempt = '',1
     success = wsObj.sendWS(message,chat_key,chat_iv)
@@ -206,7 +207,7 @@ def enter_OTP(request,mobileno,message):
     try:
         wsObj
     except NameError:
-        wsObj = commCls.wscomm(get_current_site(request).domain,room_otp)
+        wsObj = wscomm(get_current_site(request).domain,room_otp)
     message = '~02'+mobileno+'|'+message
     wsObj.sendWS(message,chat_key,chat_iv)
     result,attempt = '',1
