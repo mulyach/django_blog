@@ -57,7 +57,7 @@ class wscomm:
         while loop:
             try:
                 result = self.json.loads(decrypt(self.wS.recv(), chat_key,chat_iv))['message']
-                print('sentLs',sentLs)
+                print('sentLs',self.sentLs)
             except (ConnectionResetError,BrokenPipeError):
                 print('RECONNECTING')     #TO BE DELETED
                 self.connectWS()
