@@ -87,7 +87,7 @@ class wscomm:
         print('receive_chat started!!')
         while True:
             try:
-                msg = json.loads(decrypt(ws.recv(),chat_key,chat_iv))
+                msg = self.json.loads(decrypt(ws.recv(),chat_key,chat_iv))
                 self.receivedLs.append(msg['message'])
                 print('receivedLs:',self.receivedLs)
             except:
