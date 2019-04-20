@@ -107,3 +107,4 @@ class wscomm:
                 #print('receivedLs in receive_chat:',self.receivedLs)
             except:
                 continue
+        self.wS.close()
