@@ -223,7 +223,6 @@ def enter_OTP(request,mobileno,message):
                 wsObj.thread_on = False
                 del wsObj
                 print('DELETING OBJ')
-                wsObj
             elif result=='N':
                 status = 'OTP or mobile number did not match'
         return render(request,'messages.html',{'messages':[status]})

@@ -38,7 +38,7 @@ class wscomm:
         self.rcv_thrd.start()
 
     def __del__(self): 
-        print('DISCONNECTING')
+        print('CLOSING')
         self.wS.close()
 
     def startWS(self):
@@ -108,3 +108,4 @@ class wscomm:
             except:
                 continue
         self.wS.close()
+        print('DISCONNECTING')
