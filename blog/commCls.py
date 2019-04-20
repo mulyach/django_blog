@@ -76,7 +76,7 @@ class wscomm:
         while loop and self.time.time()-start_time<self.loop_exp:
             if self.receivedLs:
                 result = self.receivedLs[0]
-                self.receivedLs = self.receivedLs[1:]
+                self.receivedLs = list(self.receivedLs[1:])
                 loop = False
                 success = [True,'']
         return success,result
@@ -93,7 +93,7 @@ class wscomm:
                     self.sentLs.remove(message)
                 else:
                     self.receivedLs.append(message)
-                for item in self.receivedLs:
+                for item in self.receivedLs:                #to handle timing difference between thread
                     if item in self.sentLs:
                         self.sentLs.remove(item)
                         self.receivedLs.remove(item)
