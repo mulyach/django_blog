@@ -89,11 +89,15 @@ class wscomm:
                 msg = self.json.loads(decrypt(ws.recv(),chat_key,chat_iv))
                 message = msg['message']
                 print('message in receive_chat:',message)
-                print('sentLs in receive_chat:',self.sentLs)
                 if message in self.sentLs:
                     self.sentLs.remove(message)
                 else:
                     self.receivedLs.append(message)
-                    print('receivedLs:',self.receivedLs)
+                for item in self.receivedLs:
+                    if item in self.sentLs:
+                        self.sentLs.remove(item)
+                        self.receivedLs.remove(item)
+                print('sentLs in receive_chat:',self.sentLs)
+                print('receivedLs in receive_chat:',self.receivedLs)
             except:
                 continue
