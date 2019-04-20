@@ -36,6 +36,10 @@ class wscomm:
         self.rcv_thrd = myThread(self.wS,self.chat_key,self.chat_iv,self.receive_chat)
         self.rcv_thrd.start()
 
+    def __del__(self): 
+        print('DISCONNECTING')
+        self.wS.close()
+
     def startWS(self):
         self.ChatConsumer({'url_route':{'kwargs':{'room_name':self.room_name}}})
         self.connectWS()
@@ -102,7 +106,3 @@ class wscomm:
                 #print('receivedLs in receive_chat:',self.receivedLs)
             except:
                 continue
-
-    def __del__(self):
-        print('DISCONNECTING')
-        self.wS.close()

@@ -216,11 +216,12 @@ def enter_OTP(request,mobileno,message):
             success_rcv,result = wsObj.receiveWS()
             print('RESULT:{}. Attempt:{}'.format(result,attempt))
             attempt+=1
-        status = 'OTP verification unsuccessful. Please retry.'
+        status = 'OTP verification unsuccessful. Please retry later.'
         if success_rcv[0]:
             if result=='Y':
                 status = 'OTP verified'
                 del wsObj
+                print('DELETING OBJ')
             elif result=='N':
                 status = 'OTP or mobile number did not match'
         return render(request,'messages.html',{'messages':[status]})
