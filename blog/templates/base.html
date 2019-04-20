@@ -62,7 +62,7 @@
                         <p><a href="{% url 'signup' %}?next={{request.path}}">Signup</a></p>
                         <input type="text" value="" id="username" style="display:none;">
                     {% endif %}
-                    {% if chat_ready %}
+                    {% if cs_chat_ready %}
                         {%if user.is_staff%}
                             <a href="#" onclick="openChatMonitor();return false;">Chat Monitor</a><br>
                             <a href="#" onclick="openServeChat();return false;">Serve Chat</a>

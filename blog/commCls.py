@@ -7,8 +7,9 @@ Created on Sat Apr 20 07:28:33 2019
 """
 class wscomm:
     from .consumers import ChatConsumer
-    import websocket,json
+    import websocket,json,time
     from .enc_dec import encrypt,decrypt
+    loop_exp = 30 #seconds
 
     def __init__(self,domain,room_name):
         self.room_name = room_name
@@ -16,7 +17,7 @@ class wscomm:
         self.ChatConsumer({'url_route':{'kwargs':{'room_name':self.room_name}}})
         self.sentLs = []
         self.startWS()
-        print('CONNECTING')
+        print('CONNECTING')     #TO BE  DELETED
 
     def startWS(self):
         self.ChatConsumer({'url_route':{'kwargs':{'room_name':self.room_name}}})
@@ -31,44 +32,46 @@ class wscomm:
 
     def sendWS(self,message,chat_key,chat_iv):
         from .enc_dec import encrypt
-        success = [True,'']
-        loop = True
-        while loop:
+        success = [False,'No response timeout']
+        loop,start_time = True,self.time.time()
+        while loop and self.time.time()-start_time<self.loop_exp:
             try:
                 self.wS.send(encrypt(self.json.dumps({'message':message}), chat_key,chat_iv))
                 self.sentLs.append(message)
                 loop = False
+                success = [True,'']
             except (ConnectionResetError,BrokenPipeError):
-                print('RECONNECTING')
+                print('RECONNECTING')     #TO BE  DELETED
                 self.connectWS()
             except self.websocket._exceptions.WebSocketConnectionClosedException:
-                print('RESTARTING')
+                print('RESTARTING')     #TO BE  DELETED
                 self.startWS()
             except Exception as er:
                 success = [False,str(er)]
-                print('ERROR:',er)
+                print('ERROR:',er)     #TO BE  DELETED
                 loop = False
         return success
 
     def receiveWS(self,chat_key,chat_iv):
         from .enc_dec import decrypt
-        success = [True,'']
-        result,loop = '',True
-        while loop:
+        success = [False,'No response timeout']
+        result,loop,start_time = '',True,self.time.time()
+        while loop and self.time.time()-start_time<self.loop_exp:
             try:
                 result = self.json.loads(decrypt(self.wS.recv(), chat_key,chat_iv))['message']
             except (ConnectionResetError,BrokenPipeError):
-                print('RECONNECTING')
+                print('RECONNECTING')     #TO BE  DELETED
                 self.connectWS()
             except self.websocket._exceptions.WebSocketConnectionClosedException:
-                print('RESTARTING')
+                print('RESTARTING')     #TO BE  DELETED
                 self.startWS()
             except Exception as er:
                 success = [False,str(er)]
-                print('ERROR',er)
+                print('ERROR',er)     #TO BE  DELETED
                 loop = False
             if result in self.sentLs:
                 self.sentLs.remove(result)
             else:
                 loop = False
+                success = [True,'']
         return success,result

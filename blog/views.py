@@ -14,7 +14,6 @@ from .commCls import wscomm
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.contrib.sites.shortcuts import get_current_site
-#chat_started = False   #TO BE DELETED
 max_attempt = 2
 cs_chat_ready_def = True
 temp_ROOM_OTP = '__otpr__'
@@ -25,7 +24,7 @@ temp_CHAT_IV = 'ZTvhkBXAV91Fi^3r'
 #------
 chat_key = mark_safe(json.dumps(os.environ.get('CHAT_KEY', temp_CHAT_KEY)))
 chat_iv = mark_safe(json.dumps(os.environ.get('CHAT_IV', temp_CHAT_IV)))
-chat_ready = bool(os.environ.get('CHAT_READY', cs_chat_ready_def))          #CHANGE TO CS_CHAT_READY
+cs_chat_ready = bool(os.environ.get('CS_CHAT_READY', cs_chat_ready_def))
 room_cs_master = mark_safe(json.dumps(os.environ.get('ROOM_CS_MASTER', temp_ROOM_CS_MASTER)))
 room_otp = mark_safe(os.environ.get('ROOM_OTP', temp_ROOM_OTP))
 
@@ -35,7 +34,7 @@ def index(request):
     ct.counts += 1
     ct.save()
     latest_article_list = Article.objects.filter(display=True,contributor_author=None).order_by('-pub_date')[:20]
-    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'chat_ready':chat_ready,'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv}
+    context = {'latest_article_list': latest_article_list, 'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready,'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv}
 
     return render(request,'blog_t/index.html',context)
 
@@ -59,19 +58,19 @@ def show_article(request,article_id):
             newcomment.email_address = add_comment.cleaned_data['email_address']
             newcomment.writeup = add_comment.cleaned_data['writeup']
             newcomment.save()
-            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'add_comment_form':Add_Comment()})
+            return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'add_comment_form':Add_Comment()})
     else:
         add_comment = Add_Comment()
-    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'add_comment_form':add_comment})
+    return render(request,'blog_t/article_detail.html',{'article':article,'comments':comments, 'images':images,'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'add_comment_form':add_comment})
 
 def category_list(request,category_label):
     category = get_object_or_404(Category,category_label=category_label)
     articles = Category.objects.get(category_label=category_label).article_set.filter(display=True)
-    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+    return render(request,'blog_t/article_list.html',{'header':category.category_label,'articles':articles,'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
 
 def my_articles_list(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
-    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+    return render(request,'blog_t/article_list.html',{'header':'My Article','articles':articles,'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
 
 def upload_image(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
@@ -86,12 +85,12 @@ def upload_image(request,username):
                 """
                 newimage = article.image_set.create(caption = form.cleaned_data['caption'], img_file = form.cleaned_data['img_file'])
                 newimage.save()
-                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+                return render(request,'messages.html',{'messages':['Image upload success.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
             else:
-                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+                return render(request,'messages.html',{'messages':['Please attach the image to any of your article.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
     else:
         form = Image_Form()
-    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+    return render(request,'blog_t/upload_image.html',{'form':form,'articles':articles,'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
 
 @login_required()
 def compose(request,username):
@@ -106,10 +105,10 @@ def compose(request,username):
             newarticle.pub_date = datetime.datetime.now()
             newarticle.display = False
             newarticle.save()
-            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+            return render(request,'messages.html',{'messages':['Thank you for your contribution.','Your article will appear after it is approved.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
     else:
         form = Compose_Form()
-    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+    return render(request,'blog_t/compose.html',{'form':form,'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
 
 #manual way of adding comment
 """
@@ -149,7 +148,7 @@ def signature(request):
         """
         try:
             newsignature.save()
-            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'chat_ready':chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+            return render(request,'messages.html',{'messages':['Signature upload successful.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
         except:
             pass
         return render(request,'blog_t/signature.html')            
@@ -179,7 +178,7 @@ def cs_chat_monitor(request,username):
     return render(request,'blog_t/cs_chat_monitor.html',{'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'username':mark_safe(json.dumps(username))})
 
 def cs_chat_room(request,room_name,username,title):
-    if chat_ready:
+    if cs_chat_ready:
         return render(request,'blog_t/cs_chat_room.html',{'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv,'username':mark_safe(json.dumps(username)),'room_name': mark_safe(json.dumps(room_name)),'title':title+(('@'+room_name) if 'Chat Room' not in title else '')})
     else:
         raise Http404()
