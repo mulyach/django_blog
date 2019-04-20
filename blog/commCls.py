@@ -93,7 +93,7 @@ class wscomm:
                 if message in self.sentLs:
                     self.sentLs.remove(message)
                 else:
-                    self.receivedLs.append(message)
+                    self.receivedLs += [message]
                 for item in self.receivedLs:                #to handle timing difference between thread
                     if item in self.sentLs:
                         self.sentLs.remove(item)
