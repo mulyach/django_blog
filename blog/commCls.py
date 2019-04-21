@@ -59,7 +59,7 @@ class wscomm:
                 self.sentLs.append(message)
                 #print('sentLs in sendWS',self.sentLs)
                 loop = False
-            except (ConnectionResetError,BrokenPipeError):
+            except (ConnectionResetError,BrokenPipeError):          #DO THESE NEEDED?
                 print('RECONNECTING')     #TO BE DELETED
                 self.connectWS()
             except self.websocket._exceptions.WebSocketConnectionClosedException:

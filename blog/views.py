@@ -9,14 +9,15 @@ from .models import Category,Article,ItemCounter,WebCounter,Signature
 from .forms import Add_Comment,Compose_Form,Image_Form
 import datetime,base64,json,os
 from .commCls import wscomm
-#from io import BytesIO
-#from PIL import Image
+from io import BytesIO
+from PIL import Image
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.contrib.sites.shortcuts import get_current_site
 max_attempt = 2
 cs_chat_ready_def = True
 save_remote = True
+image_resolution = (500,500)
 temp_ROOM_OTP = '__otpr__'
 temp_ROOM_CS_MASTER = '__csm__'
 #same temp vars are in: consumers.py, XC_CS_chat_master.py, XS_main_control.py
@@ -76,7 +77,7 @@ def my_articles_list(request,username):
 def upload_image(request,username):
     articles = Article.objects.filter(contributor_author=User.objects.get(username=username))
     if request.method == 'POST':
-        form = Image_Form(request.POST, request.FILES)
+        form = Image_Form(request.POST, request.FILES)                  #NEED TO LIMIT FILE SIZE
         if form.is_valid():
             article = Article.objects.get(id = form.cleaned_data['article'].id)
             if article in articles or User.objects.get(username=username) in User.objects.filter(is_staff=True):
@@ -84,14 +85,24 @@ def upload_image(request,username):
                     failed_msg = 'Image save unsuccessful. Please retry later.'
                     failed_response = render(request,'messages.html',{'messages':[failed_msg]})
 
-                    imgf= form.cleaned_data['img_file'].read()
-                    image_data_str = base64.b64encode(imgf).decode()
+                    #imgf= form.cleaned_data['img_file'].read()
+                    #image_data_str = base64.b64encode(imgf).decode()
+
+                    image = Image.open(form.cleaned_data['img_file'])
+                    fmt = image.format.lower()
+                    image.thumbnail(image_resolution)
+                    file = BytesIO()
+                    image.save(file,fmt)
+                    file.seek(0)
+                    fbyte = file.read()
+                    image_data_str = base64.b64encode(fbyte).decode()
+
                     try:
                         wsObj
                     except NameError:
                         wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
                     result,attempt = '',1
-                    success_send = wsObj.sendWS('~03'+form.cleaned_data['caption']+'.png'+image_data_str)
+                    success_send = wsObj.sendWS('~03'+form.cleaned_data['caption']+'.'+fmt+'|'+image_data_str)
                     if success_send[0]:
                         while result!='OK' and attempt<=max_attempt:
                             success_rcv,result = wsObj.receiveWS()
@@ -157,7 +168,7 @@ def add_comment(request,article_id):
 def signature(request):
     if request.method == 'POST':
         r_image_data = request.POST['image_data']
-        r_signature_owner = request.POST['signature_owner']                 #need to clean this
+        r_signature_owner = request.POST['signature_owner']                 #NEED TO CLEAN THIS
         image_format, image_data_str = r_image_data.split(';base64,')
         image_data = base64.b64decode(image_data_str)
 
@@ -169,7 +180,7 @@ def signature(request):
             except NameError:
                 wsObj = wscomm(get_current_site(request).domain,room_otp,json.loads(chat_key),json.loads(chat_iv))
             result,attempt = '',1
-            success_send = wsObj.sendWS('~03'+r_signature_owner+'.png'+image_data_str)
+            success_send = wsObj.sendWS('~03'+r_signature_owner+'.png'+'|'+image_data_str)
             if success_send[0]:
                 while result!='OK' and attempt<=max_attempt:
                     success_rcv,result = wsObj.receiveWS()
