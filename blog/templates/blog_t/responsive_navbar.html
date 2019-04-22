@@ -169,10 +169,10 @@ body {margin:0;font-family:Arial}
     if (getComputedStyle(icn).display==="none"){
       window.open('https://www.google.com',"_self")
     } else {
-      if (x.className === dc_show){
-        x.className = dc_hidden;
-      } else if (x.className === dc_hidden){
+      if (x.className === dc_hidden){
         x.className = dc_show;
+      } else if (x.className === dc_show){
+        x.className = dc_hidden;
       }
     }
   }
