@@ -288,3 +288,6 @@ def enter_OTP(request,mobileno,message):
         return render(request,'messages.html',{'messages':[status]})
     else:
         return render(request,'messages.html',{'messages':[failed_msg]})
+
+def rnb(request):
+    return render(request,'blog_t/responsive_navbar.html')

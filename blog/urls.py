@@ -19,4 +19,5 @@ urlpatterns = [
     #path('start_comm', views.start_comm, name='start_comm'),
     path('send_OTP/<message>', views.send_OTP, name='send_OTP'),
     path('enter_OTP/<mobileno>/<message>', views.enter_OTP, name='enter_OTP'),
+    path('rnb', views.rnb, name='rnb'),
 ]
