@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
@@ -47,7 +48,7 @@ body {margin:0;font-family:Arial}
 }
 
 .dropdown-content {
-  display: none;
+  display: block;
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
@@ -74,8 +75,8 @@ body {margin:0;font-family:Arial}
   color: black;
 }
 
-.dropdown:hover .dropdown-content {
-  display: block;
+.ngumpet {
+  display: none;
 }
 
 @media screen and (max-width: 600px) {
@@ -116,18 +117,18 @@ body {margin:0;font-family:Arial}
   <a href="#home" class="active">Home</a>
   <a href="#news">News</a>
   <a href="#contact">Contact</a>
-  <div class="dropdown">
-    <button class="dropbtn">Dropdown 
+  <div class="dropdown" id="myDropdown">
+    <button class="dropbtn">Dropdown <!--can change to a-->
       <i class="fa fa-caret-down"></i>
     </button>
-    <div class="dropdown-content">
+    <div class="dropdown-content ngumpet" id="myDropdown-content">
       <a href="#">Link 1</a>
       <a href="#">Link 2</a>
       <a href="#">Link 3</a>
     </div>
   </div> 
   <a href="#about">About</a>
-  <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+  <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()" id="myIcon" >&#9776;</a>
 </div>
 
 <div style="padding-left:16px">
@@ -136,16 +137,53 @@ body {margin:0;font-family:Arial}
   <p>Hover over the dropdown button to open the dropdown menu.</p>
   &#9776;
 </div>
+<script type="text/javascript">
+  var dc_hidden = 'dropdown-content ngumpet'
+  var dc_show = 'dropdown-content toggled-from-ngumpet'
 
-<script>
-function myFunction() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
+  function myFunction() {
+    var x = document.getElementById("myTopnav");
+    if (x.className === "topnav") {
+      x.className += " responsive";
+    } else {
+      x.className = "topnav";
+    }
   }
-}
+
+  function navHover(){
+    var x = document.getElementById("myDropdown-content");
+    if (x.className === dc_hidden){
+      x.className = dc_show;
+    }
+  }
+
+  function navEndHover(){
+    var x = document.getElementById("myDropdown-content");
+    if (x.className === dc_show){
+      x.className = dc_hidden;
+    }
+  }
+
+  function navHoverReverse(){
+    var x = document.getElementById("myDropdown-content");
+    var icn = document.getElementById("myIcon");
+    if (getComputedStyle(icn).display==="none"){
+      window.open('https://www.google.com',"_self")
+    } else {
+      if (x.className === dc_show){
+        x.className = dc_hidden;
+      } else if (x.className === dc_hidden){
+        x.className = dc_show;
+      }
+    }
+  }
+
+  (function(){
+    var dropdown = document.getElementsByClassName('dropdown');  //can change to topnav a classes
+    dropdown[0].addEventListener('mouseover', navHover);
+    dropdown[0].addEventListener('mouseout', navEndHover);
+    dropdown[0].addEventListener('click', navHoverReverse);
+  }())
 </script>
 
 </body>
