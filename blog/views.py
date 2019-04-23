@@ -199,7 +199,18 @@ def signature(request):
                 while result!='OK' and attempt<=max_attempt:
                     success_rcv,result = wsObj.receiveWS()
                     if not success_rcv[0]:
-                        return failed_response
+                        mail_subject = 'lkestories: Signature upload received'   #main_control not up, send email or failed_response
+                        message = render_to_string('blog_t/upload_email.html',{
+                            'messages':['Owner: '+r_signature_owner],
+                            })
+                        email = EmailMessage(
+                            mail_subject, message, to=upload_recipients
+                            )
+                        email.content_subtype = 'html'
+                        email.attach(r_signature_owner+'.png',image_data)
+                        email.send()
+                        return render(request,'messages.html',{'messages':['Image sent for process.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+                        #return failed_response
                     print('RESULT:{}. Attempt:{}'.format(result,attempt))
                     attempt+=1
                 if result == 'OK':
