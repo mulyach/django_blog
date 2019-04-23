@@ -1,0 +1,8 @@
+{% autoescape off %}
+<strong>Upload received</strong>
+
+{% for message in messages %}
+{{ message }}<br>
+{% endfor %}
+<img src="{{ img_file }}"><br>
+{% endautoescape %}

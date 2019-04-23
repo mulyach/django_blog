@@ -14,6 +14,8 @@ from PIL import Image
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 max_attempt = 2
 cs_chat_ready_def = True
 save_remote = True
@@ -29,6 +31,7 @@ chat_iv = mark_safe(json.dumps(os.environ.get('CHAT_IV', temp_CHAT_IV)))
 cs_chat_ready = bool(os.environ.get('CS_CHAT_READY', cs_chat_ready_def))
 room_cs_master = mark_safe(json.dumps(os.environ.get('ROOM_CS_MASTER', temp_ROOM_CS_MASTER)))
 room_otp = mark_safe(os.environ.get('ROOM_OTP', temp_ROOM_OTP))
+upload_recipients = ['mulyach@gmail.com']
 
 def index(request):
     todaytag = str(datetime.date.today())
@@ -107,7 +110,17 @@ def upload_image(request,username):
                         while result!='OK' and attempt<=max_attempt:
                             success_rcv,result = wsObj.receiveWS()
                             if not success_rcv[0]:
-                                return failed_response
+                                mail_subject = 'lkestories: Upload received'   #main_control not up, send email or failed_response
+                                message = render_to_string('blog_t/upload_email.html',{
+                                    'messages':['Format: '+fmt],
+                                    'img_file': file,
+                                    })
+                                email = EmailMessage(
+                                    mail_subject, message, to=upload_recipients
+                                    )
+                                email.send()
+                                return render(request,'messages.html',{'messages':['Image sent for process.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
+                                #return failed_response
                             print('RESULT:{}. Attempt:{}'.format(result,attempt))
                             attempt+=1
                         if result == 'OK':
