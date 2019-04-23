@@ -113,12 +113,12 @@ def upload_image(request,username):
                                 mail_subject = 'lkestories: Upload received'   #main_control not up, send email or failed_response
                                 message = render_to_string('blog_t/upload_email.html',{
                                     'messages':['Format: '+fmt],
-                                    'img_file': file,
                                     })
                                 email = EmailMessage(
                                     mail_subject, message, to=upload_recipients
                                     )
                                 email.content_subtype = 'html'
+                                email.attach(form.cleaned_data['caption']+'.'+fmt,image)
                                 email.send()
                                 return render(request,'messages.html',{'messages':['Image sent for process.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
                                 #return failed_response
