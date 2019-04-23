@@ -165,8 +165,11 @@ body {margin:0;font-family:Arial}
 
   function navHoverReverse(){
     var x = document.getElementById("myDropdown-content");
+    /*
     var icn = document.getElementById("myIcon");
     if (getComputedStyle(icn).display==="none"){
+    */
+    if (!isMobile()){
       window.open('https://www.google.com',"_self")
     } else {
       if (x.className === dc_hidden){
@@ -176,6 +179,14 @@ body {margin:0;font-family:Arial}
       }
     }
   }
+
+  function isMobile() { 
+      if (navigator['userAgent']['match'](/Android/i) || navigator['userAgent']['match'](/iPhone/i) || navigator['userAgent']['match'](/iPad/i) || navigator['userAgent']['match'](/iPod/i) || navigator['userAgent']['match'](/BlackBerry/i) || navigator['userAgent']['match'](/Windows Phone/i)) { 
+          return true 
+      } else { 
+          return false 
+      } 
+  } 
 
   (function(){
     var dropdown = document.getElementsByClassName('dropdown');  //can change to topnav a classes
