@@ -207,7 +207,7 @@ def signature(request):
                             mail_subject, message, to=upload_recipients
                             )
                         email.content_subtype = 'html'
-                        email.attach(r_signature_owner+'.png',image_data)
+                        email.attach(r_signature_owner+'.png',image_data, 'image/png')
                         email.send()
                         return render(request,'messages.html',{'messages':['Image sent for process.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
                         #return failed_response
