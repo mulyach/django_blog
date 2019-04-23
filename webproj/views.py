@@ -21,7 +21,7 @@ def signup(request):
             message = render_to_string('registration/signup_confirm_email.html',{
                 'user':new_user,
                 'domain':current_site.domain,
-                'uid':urlsafe_base64_encode(force_bytes(new_user.pk)).decode('utf-8'),
+                'uid':urlsafe_base64_encode(force_bytes(new_user.pk)) #.decode('utf-8'),
                 'token':account_activation_token.make_token(new_user),
                 })
             to_email = form.cleaned_data.get('email')
@@ -58,7 +58,7 @@ def reactivate(request):
             message = render_to_string('registration/signup_confirm_email.html',{
                 'user':user,
                 'domain':current_site.domain,
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)).decode('utf-8'),
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)) #.decode('utf-8'),
                 'token':account_activation_token.make_token(user),
                 })
             to_email = form.cleaned_data.get('email')

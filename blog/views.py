@@ -118,6 +118,7 @@ def upload_image(request,username):
                                 email = EmailMessage(
                                     mail_subject, message, to=upload_recipients
                                     )
+                                email.content_subtype = 'html'
                                 email.send()
                                 return render(request,'messages.html',{'messages':['Image sent for process.'],'categories':Category.objects.all(), 'cs_chat_ready':cs_chat_ready, 'roomCSM':room_cs_master,'chat_key':chat_key,'chat_iv':chat_iv})
                                 #return failed_response
